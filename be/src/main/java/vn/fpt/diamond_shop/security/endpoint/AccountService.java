@@ -5,18 +5,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vn.fpt.diamond_shop.model.Address;
-import vn.fpt.diamond_shop.model.EndUser;
-import vn.fpt.diamond_shop.model.User;
-import vn.fpt.diamond_shop.model.UserRole;
-import vn.fpt.diamond_shop.repository.*;
 import vn.fpt.diamond_shop.request.ChangePasswordRequest;
+import vn.fpt.diamond_shop.model.EndUser;
 import vn.fpt.diamond_shop.request.ChangeProfileRequest;
 import vn.fpt.diamond_shop.request.SignUpRequest;
+import vn.fpt.diamond_shop.repository.AddressRepository;
+import vn.fpt.diamond_shop.repository.EndUserRepository;
+import vn.fpt.diamond_shop.repository.UserRepository;
+import vn.fpt.diamond_shop.repository.UserRoleRepository;
 import vn.fpt.diamond_shop.response.ImageInformation;
 import vn.fpt.diamond_shop.response.UserProfileResponse;
 import vn.fpt.diamond_shop.security.exception.BadRequestException;
-import vn.fpt.diamond_shop.security.model.AuthProvider;
-import vn.fpt.diamond_shop.security.model.RoleEnum;
+import vn.fpt.diamond_shop.security.model.*;
 import vn.fpt.diamond_shop.service.ImageService;
 import vn.fpt.diamond_shop.service.Impl.OtpService;
 
@@ -26,172 +26,136 @@ import java.time.OffsetDateTime;
 @Service
 public class AccountService {
 
-    private final AddressRepository addressRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final UserRepository userRepository;
-    private final UserRoleRepository userRoleRepository;
-    private final EndUserRepository endUserRepository;
-    private final ImageService imageService;
-    private final OtpService otpService;
-
     @Autowired
-    public AccountService(AddressRepository addressRepository, PasswordEncoder passwordEncoder,
-            UserRepository userRepository,
-            UserRoleRepository userRoleRepository, EndUserRepository endUserRepository,
-            ImageService imageService, OtpService otpService) {
-        this.addressRepository = addressRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.userRepository = userRepository;
-        this.userRoleRepository = userRoleRepository;
-        this.endUserRepository = endUserRepository;
-        this.imageService = imageService;
-        this.otpService = otpService;
-    }
+    private AddressRepository addressRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private UserRoleRepository userRoleRepository;
+    @Autowired
+    private EndUserRepository endUserRepository;
+    @Autowired
+    private ImageService imageService;
+    @Autowired
+    private OtpService otpService;
+    @Autowired
+    private TokenProvider tokenProvider;
 
     @Transactional
     public void register(SignUpRequest registerRequest) {
-        validateEmail(registerRequest.getEmail());
-        validateOtp(registerRequest.getEmail(), registerRequest.getOtp());
-
-        User user = createUser(registerRequest);
-        createUserRole(user.getId());
-        createAddress(registerRequest);
-        createEndUser(registerRequest, user.getId());
-    }
-
-    @Transactional
-    public void registerV2(SignUpRequest registerRequest) {
-        validateEmail(registerRequest.getEmail());
-
-        User user = createUser(registerRequest);
-        createUserRole(user.getId());
-        createAddress(registerRequest);
-        createEndUser(registerRequest, user.getId());
-    }
-
-    public void changeProfile(ChangeProfileRequest changeProfileRequest) {
-        User account = findUserByEmail(changeProfileRequest.getEmail());
-        EndUser endUser = findEndUserByAccountId(account.getId());
-        Address address = findAddressOrCreateNew(endUser.getAddress());
-
-        updateAddress(changeProfileRequest, address);
-        updateEndUser(changeProfileRequest, endUser);
-    }
-
-    public UserProfileResponse profile(Long accountId) {
-        User account = findUserById(accountId);
-        EndUser endUser = findEndUserByAccountId(accountId);
-        Address address = findAddressById(endUser.getAddress());
-
-        return buildUserProfileResponse(account, endUser, address);
-    }
-
-    public void updateAvt(Long accountId, MultipartFile file) {
-        User account = findUserById(accountId);
-        ImageInformation imageInformation = imageService.push(file);
-        account.setImageUrl(imageInformation.getImageName());
-        userRepository.save(account);
-    }
-
-    public void changePass(ChangePasswordRequest request) {
-        User account = findUserByEmail(request.getEmail());
-        validateNewPassword(request, account);
-        validateOtp(request.getEmail(), request.getOtp());
-
-        account.setPassword(passwordEncoder.encode(request.getPassword()));
-        userRepository.save(account);
-        otpService.deleteOtp(request.getEmail());
-    }
-
-    private void validateEmail(String email) {
-        if (userRepository.existsByEmail(email)) {
+        if (userRepository.existsByEmail(registerRequest.getEmail())) {
             throw new BadRequestException("Email address already in use.");
         }
-    }
 
-    private void validateOtp(String email, String otp) {
-        if (otpService.getOtp(email) == null || !otp.equals(otpService.getOtp(email))) {
+        if (otpService.getOtp(registerRequest.getEmail()) == null ||
+                !registerRequest.getOtp().equals(otpService.getOtp(registerRequest.getEmail()))) {
             throw new BadRequestException("Invalid OTP");
         }
-        otpService.deleteOtp(email);
-    }
+        otpService.deleteOtp(registerRequest.getEmail());
 
-    private User createUser(SignUpRequest registerRequest) {
         User user = new User();
         user.setName(registerRequest.getName());
         user.setEmail(registerRequest.getEmail());
         user.setProvider(AuthProvider.local);
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-        return userRepository.save(user);
-    }
+        Long userId = userRepository.save(user).getId();
 
-    private void createUserRole(Long userId) {
         UserRole userRole = new UserRole();
         userRole.setRoleId(RoleEnum.END_USER.getId());
         userRole.setAccountId(userId);
         userRoleRepository.save(userRole);
-    }
 
-    private void createAddress(SignUpRequest registerRequest) {
         Address address = new Address();
         address.setProvince(registerRequest.getProvince());
         address.setDistrict(registerRequest.getDistrict());
         address.setCity(registerRequest.getCity());
         address.setWard(registerRequest.getWard());
         address.setExtra(registerRequest.getExtra());
-        addressRepository.save(address);
-    }
+        Long addressId = addressRepository.save(address).getId();
 
-    private void createEndUser(SignUpRequest registerRequest, Long userId) {
         EndUser endUser = new EndUser();
         endUser.setPhoneNumber(registerRequest.getPhoneNumber());
         endUser.setFullName(registerRequest.getName());
         endUser.setCreateAt(OffsetDateTime.now());
         endUser.setAccountId(userId);
-        endUser.setAddress(addressRepository.findById(userId).get().getId());
+        endUser.setAddress(addressId);
         endUserRepository.save(endUser);
+
     }
 
-    private User findUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> new BadRequestException("User not found"));
+    @Transactional
+    public void registerV2(SignUpRequest registerRequest) {
+        if (userRepository.existsByEmail(registerRequest.getEmail())) {
+            throw new BadRequestException("Email address already in use.");
+        }
+
+        User user = new User();
+        user.setName(registerRequest.getName());
+        user.setEmail(registerRequest.getEmail());
+        user.setProvider(AuthProvider.local);
+        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        Long userId = userRepository.save(user).getId();
+
+        UserRole userRole = new UserRole();
+        userRole.setRoleId(RoleEnum.END_USER.getId());
+        userRole.setAccountId(userId);
+        userRoleRepository.save(userRole);
+
+        Address address = new Address();
+        address.setProvince(registerRequest.getProvince());
+        address.setDistrict(registerRequest.getDistrict());
+        address.setCity(registerRequest.getCity());
+        address.setWard(registerRequest.getWard());
+        address.setExtra(registerRequest.getExtra());
+        Long addressId = addressRepository.save(address).getId();
+
+        EndUser endUser = new EndUser();
+        endUser.setPhoneNumber(registerRequest.getPhoneNumber());
+        endUser.setFullName(registerRequest.getName());
+        endUser.setCreateAt(OffsetDateTime.now());
+        endUser.setAccountId(userId);
+        endUser.setAddress(addressId);
+        endUserRepository.save(endUser);
+
     }
 
-    private User findUserById(Long accountId) {
-        return userRepository.findById(accountId).orElseThrow(() -> new BadRequestException("User not found"));
-    }
+    public void changeProfile(ChangeProfileRequest changeProfileRequest) {
 
-    private EndUser findEndUserByAccountId(Long accountId) {
-        return endUserRepository.findEndUserByAccountId(accountId)
+        User account = userRepository.findByEmail(changeProfileRequest.getEmail())
+                .orElseThrow(() -> new BadRequestException("User not found"));
+        EndUser endUser = endUserRepository.findEndUserByAccountId(account.getId())
                 .orElseThrow(() -> new BadRequestException("EndUser not found"));
-    }
+        Address address = addressRepository.findById(endUser.getAddress()).orElseGet(Address::new);
 
-    private Address findAddressById(Long addressId) {
-        return addressRepository.findById(addressId).orElseThrow(() -> new BadRequestException("Address not found"));
-    }
-
-    private Address findAddressOrCreateNew(Long addressId) {
-        return addressId != null ? findAddressById(addressId) : new Address();
-    }
-
-    private void updateAddress(ChangeProfileRequest changeProfileRequest, Address address) {
         address.setProvince(changeProfileRequest.getProvince());
         address.setDistrict(changeProfileRequest.getDistrict());
         address.setCity(changeProfileRequest.getCity());
         address.setWard(changeProfileRequest.getWard());
         address.setExtra(changeProfileRequest.getExtra());
         addressRepository.save(address);
-    }
 
-    private void updateEndUser(ChangeProfileRequest changeProfileRequest, EndUser endUser) {
         endUser.setFullName(changeProfileRequest.getFullName());
         endUser.setPhoneNumber(changeProfileRequest.getPhoneNumber());
         endUser.setDateOfBirth(changeProfileRequest.getDateOfBirth());
+
+        // if user has not address, set address = accountId to add new address
+        if (endUser.getAddress() == null) {
+            endUser.setAddress(account.getId());
+        }
         endUser.setAge(changeProfileRequest.getAge());
         endUser.setUpdateAt(OffsetDateTime.now());
         endUserRepository.save(endUser);
     }
 
-    private UserProfileResponse buildUserProfileResponse(User account, EndUser endUser, Address address) {
+    public UserProfileResponse profile(Long accountId) {
+        User account = userRepository.findById(accountId).orElseThrow(() -> new BadRequestException("User not found"));
+        EndUser endUser = endUserRepository.findEndUserByAccountId(accountId)
+                .orElseThrow(() -> new BadRequestException("EndUser not found"));
+        Address address = addressRepository.findById(endUser.getAddress())
+                .orElseThrow(() -> new BadRequestException("Address not found"));
+
         UserProfileResponse response = new UserProfileResponse();
         response.setEmail(account.getEmail());
         response.setFullName(endUser.getFullName());
@@ -200,12 +164,29 @@ public class AccountService {
         response.setDateOfBirth(endUser.getDateOfBirth());
         response.setAvatar(account.getImageUrl());
         response.setAddress(address);
+
         return response;
     }
 
-    private void validateNewPassword(ChangePasswordRequest request, User account) {
-        if (passwordEncoder.matches(request.getPassword(), account.getPassword())) {
+    public void updateAvt(Long accountId, MultipartFile file) {
+        User account = userRepository.findById(accountId).orElseThrow(() -> new BadRequestException("User not found"));
+        ImageInformation imageInformation = imageService.push(file);
+        account.setImageUrl(imageInformation.getImageName());
+        userRepository.save(account);
+    }
+
+    public void changePass(ChangePasswordRequest request) {
+        User account = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new BadRequestException("User not found"));
+        if (passwordEncoder.matches(account.getPassword(), request.getPassword())) {
             throw new BadRequestException("New password must be different from old password");
         }
+        if (otpService.getOtp(request.getEmail()) == null ||
+                !otpService.getOtp(request.getEmail()).equals(request.getOtp())) {
+            throw new BadRequestException("Invalid OTP");
+        }
+        account.setPassword(passwordEncoder.encode(request.getPassword()));
+        userRepository.save(account);
+        otpService.deleteOtp(request.getEmail());
     }
 }
