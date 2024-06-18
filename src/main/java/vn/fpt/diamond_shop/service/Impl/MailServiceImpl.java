@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import vn.fpt.diamond_shop.request.InvoiceMail;
 import vn.fpt.diamond_shop.service.MailService;
 
 import freemarker.template.Configuration;
@@ -26,17 +27,26 @@ public class MailServiceImpl implements MailService {
     @Override
     public void sendOtp(String email, String subject, String content) {
         try {
-            Map<String, String> param = new HashMap<>();
+            Map<String, Object> param = new HashMap<>();
             param.put("otp", content);
-            push(email, subject, param);
+            push(email, subject, param, "otp_mail_template.ftl");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void push(String email, String subject, Map<String, String> attribute) throws Exception {
-        final String templateName = "mail_template.ftl";
+    @Override
+    public void sendInvoice(String email, String subject, InvoiceMail mail) {
+        try {
+            Map<String, Object> param = new HashMap<>();
+            param.put("order", mail);
+            push(email, subject, param, "invoice_mail_template.ftl");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+    private void push(String email, String subject, Map<String, Object> attribute, String templateName) throws Exception {
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
 

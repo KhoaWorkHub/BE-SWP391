@@ -12,4 +12,6 @@ import java.util.List;
 
 public interface ImageService {
     ImageInformation push(MultipartFile multipartFile);
+
+    ImageInformation get(String fileName);
 }

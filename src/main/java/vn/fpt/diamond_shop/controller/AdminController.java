@@ -3,6 +3,7 @@ package vn.fpt.diamond_shop.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.fpt.diamond_shop.jobs.RenewImageJob;
 import vn.fpt.diamond_shop.request.ManagerModifyAccountRequest;
 import vn.fpt.diamond_shop.service.AdminService;
 
@@ -13,6 +14,9 @@ public class AdminController extends BaseController {
     @Autowired
     private AdminService adminService;
 
+    @Autowired
+    private RenewImageJob renewImage;
+
     @GetMapping("/account")
     private ResponseEntity<?> listAccount() {
         return ok(adminService.listAccount());
@@ -22,5 +26,11 @@ public class AdminController extends BaseController {
     private ResponseEntity<?> modify(@RequestBody ManagerModifyAccountRequest request) {
         adminService.changeInforAccount(request);
         return ok("Change account success");
+    }
+
+    @PutMapping("/job/renew-image")
+    private ResponseEntity<?> renewImage() {
+        renewImage.renewImageTask();
+        return noContent();
     }
 }

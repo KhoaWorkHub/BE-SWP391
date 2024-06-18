@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import java.sql.Date;
+import java.util.List;
 
 
 @Data
@@ -19,7 +20,7 @@ import java.sql.Date;
 public class AddOrderResponse {
     private Long id;
 
-    private Long jewelryId;
+    private List<Long> jewelryId;
 
     private Date orderDate;
 
@@ -27,21 +28,7 @@ public class AddOrderResponse {
 
     private Long customerId;
 
-    private Integer quantityNumber;
-
     private Long totalPrice;
 
-    private Date createdAt;
-
-    private String createdBy;
-
-    private Date updatedAt;
-
-    private String updatedBy;
-
-    private String jewelryTitle;
-
-    private Long priceItems;
-
-    private String imageUrl;
+    private String uniqueOrderId;
 }

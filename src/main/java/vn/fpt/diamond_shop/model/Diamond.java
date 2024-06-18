@@ -18,7 +18,6 @@ public class Diamond {
     private Long id;
     @Column(name = "carat")
     private int carat;
-
     @Column(name = "quantity")
     private Integer quantity;
     @Column(name = "clarity_id")

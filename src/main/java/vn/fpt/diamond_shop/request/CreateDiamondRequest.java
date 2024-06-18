@@ -17,6 +17,7 @@ import javax.persistence.Column;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CreateDiamondRequest extends BaseRequest {
+    private Long id;
 
     private Long idDiamond;
 

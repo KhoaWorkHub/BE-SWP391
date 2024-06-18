@@ -20,6 +20,7 @@ public class Shape {
     private Long id;
 
     @Column(name = "shape", unique = true)
+    @Enumerated(EnumType.STRING)
     private DiamondShapeEnum shape;
 
     @Column(name = "image")

@@ -4,7 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import vn.fpt.diamond_shop.constants.DiamondClarityEnum;
+import vn.fpt.diamond_shop.constants.DiamondColorEnum;
 import vn.fpt.diamond_shop.model.Diamond;
+import vn.fpt.diamond_shop.repository.RapaportReportRepository;
 import vn.fpt.diamond_shop.request.AddDiamondRequest;
 import vn.fpt.diamond_shop.response.ListDiamondReponse;
 import vn.fpt.diamond_shop.repository.DiamondRepository;
@@ -20,6 +23,10 @@ public class DiamondServiceImpl implements DiamondService {
     @Autowired
     private DiamondRepository diamondRepo;
 
+    @Autowired
+    private RapaportReportRepository rapaportReportRepository;
+
+    private final int BASE_PRICE_USD = 100;
 
     public long diamondPricing(Diamond diamond) {
         return 0;
@@ -43,5 +50,11 @@ public class DiamondServiceImpl implements DiamondService {
         GetDetailDiamondResponse getDetailDiamondResponse = new GetDetailDiamondResponse();
         BeanUtils.copyProperties(byId, getDetailDiamondResponse);
         return getDetailDiamondResponse;
+    }
+
+    @Override
+    public int getDiamondPrice(double weight, DiamondClarityEnum clarityEnum, DiamondColorEnum diamondColorEnum) {
+        Optional<Integer> price = rapaportReportRepository.getDiamondPrice(weight, clarityEnum.name(), diamondColorEnum.name());
+        return BASE_PRICE_USD + price.orElse(0);
     }
 }

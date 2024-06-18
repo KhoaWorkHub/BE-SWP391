@@ -43,7 +43,7 @@ public class ImageServiceImpl implements ImageService {
             String uuid = UUIDUtil.generateUUID();
             String imageName = multipartFile.getOriginalFilename() + "." + uuid;
             minioClient.putObject(PutObjectArgs.builder().bucket(bucket).stream(multipartFile.getInputStream(), multipartFile.getSize(), -1).object(imageName).contentType(multipartFile.getContentType()).build());
-            String feImgUrl = get(imageName);
+            String feImgUrl = getImg(imageName);
             imageInformation.setImageName(imageName);
             imageInformation.setUrl(feImgUrl);
             imageInformation.setImageId(imageRepository.save(new Image(imageName, feImgUrl)).getId());
@@ -54,17 +54,22 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
-    private String get(Long imageId) {
-        Optional<Image> image = imageRepository.findById(imageId);
-        if (!image.isPresent()) {
-            throw new RuntimeException("Image not found");
-        }
-        return get(image.get().getImageName());
+    @Override
+    public ImageInformation get(String fileName) {
+        ImageInformation imageInformation = new ImageInformation();
+        Image image = imageRepository.findImageByImageName(fileName).orElseGet(Image::new);
+        String url = getImg(fileName);
+
+        imageInformation.setUrl(url);
+        imageInformation.setImageName(fileName);
+        imageInformation.setImageId(image.getId());
+
+        return imageInformation;
     }
 
-    private String get(String imageFile) {
+    private String getImg(String imageFile) {
         try {
-            return minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().bucket(bucket).expiry(90, TimeUnit.DAYS).object(imageFile).method(Method.GET).build());
+            return minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().bucket(bucket).expiry(7, TimeUnit.DAYS).object(imageFile).method(Method.GET).build());
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);

@@ -2,6 +2,7 @@ package vn.fpt.diamond_shop.constants;
 
 public enum DiamondColorEnum {
     D,
+    E,
     F,
     G,
     H,
@@ -9,11 +10,6 @@ public enum DiamondColorEnum {
     J,
     K,
     L,
-    M,
-    N,
-    D_F,
-    G_H,
-    I_J,
-    K_L,
-    M_N
+    M;
+
 }

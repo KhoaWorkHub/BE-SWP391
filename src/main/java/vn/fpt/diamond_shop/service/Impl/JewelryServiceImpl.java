@@ -47,7 +47,7 @@ public class JewelryServiceImpl implements JewelryService {
         if(request.getOffset() == null){
             request.setOffset(0);
         }
-        Page<GetListJewelryResponse> jewelriesPage =  jewelryRepository.getListJewelry(request.getJewelryTypeId(), PageRequest.of(request.getOffset(), request.getLimit(), Sort.by(Sort.Direction.DESC, "id")));
+        Page<GetListJewelryResponse> jewelriesPage =  jewelryRepository.getListJewelry(request.getJewelryTypeId(), request.getTitle(), request.getBudget1(), request.getBudget2(), request.getBudget3(), PageRequest.of(request.getOffset(), request.getLimit(), Sort.by(Sort.Direction.DESC, "id")));
         jewelries = jewelriesPage.getContent();
         Meta meta = new Meta(request.getRequestId(), 200, "success", HttpStatus.OK.toString());
         meta.setLimit(request.getLimit());
@@ -76,6 +76,7 @@ public class JewelryServiceImpl implements JewelryService {
         BeanUtils.copyProperties(request, jewelry);
         jewelry.setJewelryCode(jewelryCode());
         jewelry.setCreatedBy("Khoa Tran");
+        jewelry.setMaterialPrices(request.getMaterialPrices().longValue());
         jewelry.setJewelryTypeId(request.getJewelryTypeId());
         jewelry.setIdGuide(1L);
         jewelry.setImageId(imageInformation.getImageId());
@@ -83,6 +84,33 @@ public class JewelryServiceImpl implements JewelryService {
         java.util.Date date = new java.util.Date();
         jewelry.setCreatedAt(new Date(date.getTime()));
         jewelryRepository.save(jewelry);
+        return true;
+    }
+
+    @Override
+    public boolean updateJewelry(CreateDiamondRequest request) {
+        ImageInformation imageInformation = null;
+        if (request.getMultipartFile() != null) {
+             imageInformation = imageService.push(request.getMultipartFile());
+        }
+
+        Jewelry jewelry = jewelryRepository.findJewelryById(request.getId());
+        if (jewelry !=null) {
+            jewelry.setName(request.getName());
+            jewelry.setDescription(request.getDescription());
+            jewelry.setQuantity(request.getQuantity());
+            jewelry.setMaterialPrices(request.getMaterialPrices().longValue());
+            if (imageInformation != null) {
+                jewelry.setImageId(imageInformation.getImageId());
+            }
+            jewelryRepository.save(jewelry);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean deleteJewelry(Long id) {
+        jewelryRepository.deleteById(id);
         return true;
     }
 

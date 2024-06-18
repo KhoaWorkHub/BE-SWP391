@@ -13,6 +13,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AddCartRequest extends BaseRequest{
+    private Long customerId;
     private Long jewelryId;
     private Integer quantity;
+    private String status;
+    private String phoneNumber;
 }

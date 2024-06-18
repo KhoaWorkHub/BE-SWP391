@@ -5,14 +5,10 @@ import java.util.Random;
 
 public class OTPUtils {
     private OTPUtils() {
-
     }
 
     public static String gen() {
         return new DecimalFormat("000000").format(new Random().nextInt(999999));
     }
 
-//    public static void main(String[] args) {
-//        System.out.println(gen());
-//    }
 }

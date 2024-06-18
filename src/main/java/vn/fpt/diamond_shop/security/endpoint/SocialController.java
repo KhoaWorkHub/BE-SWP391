@@ -75,7 +75,7 @@ public class SocialController extends BaseController {
             signUpRequest.setName(name);
             signUpRequest.setEmail(email);
             signUpRequest.setPassword(password);
-            accountService.register(signUpRequest);
+            accountService.registerV2(signUpRequest);
         }
         user = userRepository.findByEmail(email).get();
         LoginRequest loginRequest = new LoginRequest();
@@ -95,5 +95,29 @@ public class SocialController extends BaseController {
 
         String token = tokenProvider.createToken(authentication);
         return ResponseEntity.ok(new AuthResponse(token, role));
+    }
+    @GetMapping("/create-user")
+    public ResponseEntity<?> registerUsers() {
+        SignUpRequest signUpRequest = new SignUpRequest();
+        signUpRequest.setName("admin");
+        signUpRequest.setEmail("admin@gmail.com");
+        signUpRequest.setPassword(password);
+        accountService.registerV2(signUpRequest);
+
+        signUpRequest.setName("manager");
+        signUpRequest.setEmail("manager@gmail.com");
+        accountService.registerV2(signUpRequest);
+
+        signUpRequest.setName("sale");
+        signUpRequest.setEmail("sale@gmail.com");
+        accountService.registerV2(signUpRequest);
+
+        signUpRequest.setName("delivery");
+        signUpRequest.setEmail("delivery@gmail.com");
+        accountService.registerV2(signUpRequest);
+
+
+
+        return ok("User okeee");
     }
 }

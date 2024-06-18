@@ -24,8 +24,6 @@ public class ListCartResponse {
 
     private Integer quantityNumber;
 
-    private Long totalPrice;
-
     private Date createdAt;
 
     private String createdBy;
@@ -40,8 +38,10 @@ public class ListCartResponse {
 
     private String imageUrl;
 
-    public ListCartResponse(Long id, String status, Integer quantityNumber, Date createdAt, String createdBy, String jewelryTitle, Long priceItems, String imageUrl) {
+    public ListCartResponse(Long id,Long customerId, Long jewelryId, String status, Integer quantityNumber, Date createdAt, String createdBy, String jewelryTitle, Long priceItems, String imageUrl) {
         this.id = id;
+        this.customerId = customerId;
+        this.jewelryId = jewelryId;
         this.status = status;
         this.quantityNumber = quantityNumber;
         this.createdAt = createdAt;

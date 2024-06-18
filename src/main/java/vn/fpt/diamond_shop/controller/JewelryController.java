@@ -44,5 +44,16 @@ public class JewelryController extends BaseController {
         request.setMultipartFile(file);
         return ok(jewelryService.createJewelry(request));
     }
+    @PostMapping(value = "update", consumes = {"multipart/form-data"})
+    public ResponseEntity<Object> update(@RequestPart("request") CreateDiamondRequest request
+                                         ,@RequestPart(value = "image", required = false) MultipartFile file
+    ) {
+        request.setMultipartFile(file);
+        return ok(jewelryService.updateJewelry(request));
+    }
+    @DeleteMapping(value = "delete/{id}")
+    public ResponseEntity<Object> delete(@PathVariable("id") Long id) {
+        return ok(jewelryService.deleteJewelry(id));
+    }
 
 }

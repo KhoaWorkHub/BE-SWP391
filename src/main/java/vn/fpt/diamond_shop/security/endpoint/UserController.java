@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vn.fpt.diamond_shop.controller.BaseController;
-import vn.fpt.diamond_shop.model.ChangePasswordRequest;
+import vn.fpt.diamond_shop.request.ChangePasswordRequest;
 import vn.fpt.diamond_shop.request.ChangeProfileRequest;
 import vn.fpt.diamond_shop.security.AccountService;
 import vn.fpt.diamond_shop.security.exception.ResourceNotFoundException;
@@ -13,7 +13,6 @@ import vn.fpt.diamond_shop.repository.UserRepository;
 import vn.fpt.diamond_shop.security.CurrentUser;
 import vn.fpt.diamond_shop.security.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/shop/user")

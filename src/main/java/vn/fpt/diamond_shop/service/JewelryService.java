@@ -19,4 +19,6 @@ public interface JewelryService {
     List<JewelryType> jewelryType();
 
     boolean createJewelry(CreateDiamondRequest request);
+    boolean updateJewelry(CreateDiamondRequest request);
+    boolean deleteJewelry(Long id);
 }

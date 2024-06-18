@@ -5,8 +5,8 @@ import lombok.NoArgsConstructor;
 import vn.fpt.diamond_shop.constants.DiamondColorEnum;
 
 import javax.persistence.*;
-import java.sql.Date;
 import java.time.OffsetDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "ORDERS")
@@ -16,6 +16,9 @@ public class Orders {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "unique_order_id")
+    private String uniqueOrderId;
 
     @Column(name = "order_date")
     private Date orderDate;
@@ -32,12 +35,7 @@ public class Orders {
     @Column(name = "created_at")
     private Date createdAt;
 
-    @Column(name = "created_by")
-    private String createdBy;
-
     @Column(name = "updated_at")
     private Date updatedAt;
 
-    @Column(name = "updated_by")
-    private String updatedBy;
 }
