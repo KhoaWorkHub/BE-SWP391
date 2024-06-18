@@ -1,6 +1,9 @@
 package vn.fpt.diamond_shop.security.endpoint;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import vn.fpt.diamond_shop.controller.BaseController;
+import vn.fpt.diamond_shop.repository.UserRepository;
 import vn.fpt.diamond_shop.request.LoginRequest;
 import vn.fpt.diamond_shop.security.TokenProvider;
 import vn.fpt.diamond_shop.security.UserPrincipal;
@@ -24,12 +27,18 @@ public class AuthController extends BaseController {
     private AuthenticationManager authenticationManager;
     @Autowired
     private TokenProvider tokenProvider;
+    @Autowired
+    private UserRepository userRepository;
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (!userRepository.findById(userPrincipal.getId()).get().isActive()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Account is deaactive");
+        }
 
         Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) userPrincipal.getAuthorities();
         String role = authorities.iterator().next().getAuthority();
