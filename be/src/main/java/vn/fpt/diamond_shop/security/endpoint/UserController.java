@@ -2,9 +2,7 @@ package vn.fpt.diamond_shop.security.endpoint;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import vn.fpt.diamond_shop.controller.BaseController;
-import vn.fpt.diamond_shop.request.ChangePasswordRequest;
 import vn.fpt.diamond_shop.request.ChangeProfileRequest;
 import vn.fpt.diamond_shop.security.AccountService;
 import vn.fpt.diamond_shop.security.exception.ResourceNotFoundException;
@@ -17,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 @RestController
 @RequestMapping("/shop/user")
 public class UserController extends BaseController {
-
     @Autowired
     private UserRepository userRepository;
 
