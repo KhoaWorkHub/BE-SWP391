@@ -3,6 +3,7 @@ package vn.fpt.diamond_shop.security;
 
 import vn.fpt.diamond_shop.repository.UserRoleRepository;
 import vn.fpt.diamond_shop.security.exception.ResourceNotFoundException;
+import vn.fpt.diamond_shop.security.model.Role;
 import vn.fpt.diamond_shop.security.model.RoleEnum;
 import vn.fpt.diamond_shop.security.model.User;
 import vn.fpt.diamond_shop.repository.UserRepository;
@@ -17,6 +18,7 @@ import vn.fpt.diamond_shop.security.model.UserRole;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {

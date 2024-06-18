@@ -1,5 +1,7 @@
 package vn.fpt.diamond_shop.util;
 
+import com.nimbusds.common.contenttype.ContentType;
+
 import java.math.BigInteger;
 import java.util.UUID;
 

@@ -2,7 +2,6 @@ package vn.fpt.diamond_shop.security.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import vn.fpt.diamond_shop.constants.AuthProvider;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
