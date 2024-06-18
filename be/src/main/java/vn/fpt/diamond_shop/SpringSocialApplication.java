@@ -14,13 +14,13 @@ import vn.fpt.diamond_shop.service.MailService;
 @EnableConfigurationProperties(AppProperties.class)
 @EnableCaching
 @EnableScheduling
-public class SpringSocialApp implements CommandLineRunner {
+public class SpringSocialApplication implements CommandLineRunner {
 
     @Autowired
     private MailService mailService;
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringSocialApp.class, args);
+        SpringApplication.run(SpringSocialApplication.class, args);
     }
 
     @Override
