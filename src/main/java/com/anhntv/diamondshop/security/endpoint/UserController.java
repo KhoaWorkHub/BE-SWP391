@@ -1,6 +1,7 @@
 package com.anhntv.diamondshop.security.endpoint;
 
 import com.anhntv.diamondshop.controller.BaseController;
+import com.anhntv.diamondshop.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
