@@ -55,7 +55,12 @@ public class UUIDUtil {
                 for (int i = source.length() - 1; i >= 0; --i) {
                     int digit = digit(source.charAt(i), sourceRadix);
                     if (digit == -1) {
+<<<<<<< HEAD
                         throw new IllegalArgumentException("The character '" + source.charAt(i) + "' is not defined for the radix " + sourceRadix);
+=======
+                        throw new IllegalArgumentException(
+                                "The character '" + source.charAt(i) + "' is not defined for the radix " + sourceRadix);
+>>>>>>> origin/Khang
                     }
 
                     value = value.add(multiplier.multiply(BigInteger.valueOf((long) digit)));

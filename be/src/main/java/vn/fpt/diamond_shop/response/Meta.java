@@ -32,7 +32,12 @@ public class Meta {
         this.httpCode = httpCode;
     }
 
+<<<<<<< HEAD
     public Meta(String requestId, int code, String message, String httpCode, Integer limit, Integer offset, Integer total) {
+=======
+    public Meta(String requestId, int code, String message, String httpCode, Integer limit, Integer offset,
+            Integer total) {
+>>>>>>> origin/Khang
         this.requestId = requestId;
         this.code = code;
         this.message = message;

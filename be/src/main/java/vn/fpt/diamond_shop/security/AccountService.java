@@ -84,6 +84,10 @@ public class AccountService {
         endUserRepository.save(endUser);
 
     }
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/Khang
     @Transactional
     public void registerV2(SignUpRequest registerRequest) {
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
@@ -122,8 +126,15 @@ public class AccountService {
 
     public void changeProfile(ChangeProfileRequest changeProfileRequest) {
 
+<<<<<<< HEAD
         User account = userRepository.findByEmail(changeProfileRequest.getEmail()).orElseThrow(() -> new BadRequestException("User not found"));
         EndUser endUser = endUserRepository.findEndUserByAccountId(account.getId()).orElseThrow(() -> new BadRequestException("EndUser not found"));
+=======
+        User account = userRepository.findByEmail(changeProfileRequest.getEmail())
+                .orElseThrow(() -> new BadRequestException("User not found"));
+        EndUser endUser = endUserRepository.findEndUserByAccountId(account.getId())
+                .orElseThrow(() -> new BadRequestException("EndUser not found"));
+>>>>>>> origin/Khang
         Address address = addressRepository.findById(endUser.getAddress()).orElseGet(Address::new);
 
         address.setProvince(changeProfileRequest.getProvince());
@@ -137,7 +148,10 @@ public class AccountService {
         endUser.setPhoneNumber(changeProfileRequest.getPhoneNumber());
         endUser.setDateOfBirth(changeProfileRequest.getDateOfBirth());
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/Khang
         // if user has not address, set address = accountId to add new address
         if (endUser.getAddress() == null) {
             endUser.setAddress(account.getId());
@@ -149,8 +163,15 @@ public class AccountService {
 
     public UserProfileResponse profile(Long accountId) {
         User account = userRepository.findById(accountId).orElseThrow(() -> new BadRequestException("User not found"));
+<<<<<<< HEAD
         EndUser endUser = endUserRepository.findEndUserByAccountId(accountId).orElseThrow(() -> new BadRequestException("EndUser not found"));
         Address address = addressRepository.findById(endUser.getAddress()).orElseThrow(() -> new BadRequestException("Address not found"));
+=======
+        EndUser endUser = endUserRepository.findEndUserByAccountId(accountId)
+                .orElseThrow(() -> new BadRequestException("EndUser not found"));
+        Address address = addressRepository.findById(endUser.getAddress())
+                .orElseThrow(() -> new BadRequestException("Address not found"));
+>>>>>>> origin/Khang
 
         UserProfileResponse response = new UserProfileResponse();
         response.setEmail(account.getEmail());
@@ -172,7 +193,12 @@ public class AccountService {
     }
 
     public void changePass(ChangePasswordRequest request) {
+<<<<<<< HEAD
         User account = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new BadRequestException("User not found"));
+=======
+        User account = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new BadRequestException("User not found"));
+>>>>>>> origin/Khang
         if (passwordEncoder.matches(account.getPassword(), request.getPassword())) {
             throw new BadRequestException("New password must be different from old password");
         }
