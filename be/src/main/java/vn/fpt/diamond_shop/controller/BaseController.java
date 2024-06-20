@@ -1,5 +1,6 @@
 package vn.fpt.diamond_shop.controller;
 
+<<<<<<< HEAD
 import vn.fpt.diamond_shop.response.BaseResponse;
 import vn.fpt.diamond_shop.response.Meta;
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,15 @@ import vn.fpt.diamond_shop.util.UUIDUtil;
 
 
 public class BaseController {
+=======
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import vn.fpt.diamond_shop.response.BaseResponse;
+import vn.fpt.diamond_shop.response.Meta;
+import vn.fpt.diamond_shop.util.UUIDUtil;
+
+public class   BaseController {
+>>>>>>> origin/Nhat
     public ResponseEntity<Object> ok(Object payload ) {
         String requestId = UUIDUtil.generateUUID();
         BaseResponse response = new BaseResponse(new Meta(requestId, 200, "success", HttpStatus.OK.toString()),payload);
@@ -28,4 +38,11 @@ public class BaseController {
         BaseResponse response = new BaseResponse(new Meta(requestId, 500, "internal server error", HttpStatus.INTERNAL_SERVER_ERROR.toString()),message);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(throwable.getClass().getName() + ": " + throwable.getMessage());
     }
+<<<<<<< HEAD
+=======
+
+    public ResponseEntity<?> noContent(){
+        return ResponseEntity.noContent().build();
+    }
+>>>>>>> origin/Nhat
 }

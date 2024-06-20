@@ -1,6 +1,9 @@
 package vn.fpt.diamond_shop.security;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/Nhat
 import vn.fpt.diamond_shop.config.AppProperties;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
