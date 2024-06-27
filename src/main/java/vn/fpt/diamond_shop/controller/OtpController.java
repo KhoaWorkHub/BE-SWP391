@@ -8,6 +8,7 @@ import vn.fpt.diamond_shop.security.exception.BadRequestException;
 import vn.fpt.diamond_shop.service.Impl.OtpService;
 import vn.fpt.diamond_shop.service.MailService;
 import vn.fpt.diamond_shop.util.OTPUtils;
+import vn.fpt.diamond_shop.util.logger.LogActivities;
 
 @RestController
 @RequestMapping("/shop/otp")
@@ -21,6 +22,7 @@ public class OtpController extends BaseController {
     private UserRepository userRepository;
 
     @GetMapping("/register")
+    @LogActivities
     public ResponseEntity<?> sendOtp(@RequestParam(required = true, name = "email") String email) {
         if (userRepository.existsByEmail(email)) {
             throw new BadRequestException("Email address already in use.");
@@ -32,6 +34,7 @@ public class OtpController extends BaseController {
     }
 
     @GetMapping("/forget")
+    @LogActivities
     public ResponseEntity<?> sendOtpForget(@RequestParam(required = true, name = "email") String email) {
         String otp = OTPUtils.gen();
         otpService.cacheOtp(email, otp);

@@ -12,6 +12,7 @@ import vn.fpt.diamond_shop.request.UpdateDeliverRequest;
 import vn.fpt.diamond_shop.security.CurrentUser;
 import vn.fpt.diamond_shop.security.UserPrincipal;
 import vn.fpt.diamond_shop.service.DeliveryService;
+import vn.fpt.diamond_shop.util.logger.LogActivities;
 
 import javax.validation.Valid;
 
@@ -24,22 +25,26 @@ public class DeliveryController extends BaseController {
     private DeliveryService deliveryService;
 
     @PostMapping("list")
+    @LogActivities
     public ResponseEntity<Object> list(@CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody GetListDeliveryRequest request) {
         return deliveryService.listDelivery(request);
     }
 
 
     @PostMapping("add-update")
+    @LogActivities
     public ResponseEntity<Object> add(@CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody AddDeliveryRequest request) {
         return ok(deliveryService.addDelivery(request));
     }
 
     @GetMapping("list-deliver")
+    @LogActivities
     public ResponseEntity<Object> listDeliver() {
         return deliveryService.getListDeliver();
     }
 
     @PostMapping("update-deliver")
+    @LogActivities
     public ResponseEntity<Object> updateDeliver(@CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody UpdateDeliverRequest request) {
         return ok(deliveryService.updateDeliver(request));
     }

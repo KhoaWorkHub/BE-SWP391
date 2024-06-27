@@ -6,6 +6,7 @@ import lombok.Data;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 @Entity
 @Table(name = "users", uniqueConstraints = {
@@ -40,4 +41,9 @@ public class User {
     private boolean isActive = true;
 
     private String providerId;
+    @Column(name = "created_at")
+    private Date createdAt;
+
+    @Column(name = "modified_at")
+    private Date modifiedAt;
 }

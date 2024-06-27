@@ -11,6 +11,7 @@ import vn.fpt.diamond_shop.model.Diamond;
 import vn.fpt.diamond_shop.request.CreateDiamondRequest;
 import vn.fpt.diamond_shop.service.DiamondService;
 import vn.fpt.diamond_shop.util.BaseResponse;
+import vn.fpt.diamond_shop.util.logger.LogActivities;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -25,20 +26,21 @@ public class DiamondController {
     private DiamondService diamondService;
 
     @GetMapping("/detail/")
+    @LogActivities
     public ResponseEntity<?> detail() {
         return new ResponseEntity<>(diamondService.getDetailDiamondResponse(1), HttpStatus.OK);
     }
 
     @PostMapping("/create")
+    @LogActivities
     public ResponseEntity<?> create(@Valid @RequestBody CreateDiamondRequest request, BindingResult bindingResult) {
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<Diamond>> list(@RequestParam("page") int page,
-                                              @RequestParam("size") int size) {
-        List<Diamond> diamonds = new ArrayList<>();
-        return BaseResponse.ok(diamonds);
+    @LogActivities
+    public ResponseEntity<List<Diamond>> list() {
+        return BaseResponse.ok(diamondService.listDiamonds());
     }
 
 }

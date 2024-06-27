@@ -14,17 +14,10 @@ import vn.fpt.diamond_shop.service.MailService;
 @EnableConfigurationProperties(AppProperties.class)
 @EnableCaching
 @EnableScheduling
-public class SpringSocialApplication implements CommandLineRunner {
-
-    @Autowired
-    private MailService mailService;
+public class SpringSocialApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(SpringSocialApplication.class, args);
     }
 
-    @Override
-    public void run(String... args) throws Exception {
-//        mailService.sendOtp("thanhpdhe141032@gmail.com", "Diamond Shop OTP", "123456");
-    }
 }

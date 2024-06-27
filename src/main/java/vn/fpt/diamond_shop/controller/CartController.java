@@ -13,6 +13,7 @@ import vn.fpt.diamond_shop.request.*;
 import vn.fpt.diamond_shop.security.CurrentUser;
 import vn.fpt.diamond_shop.security.UserPrincipal;
 import vn.fpt.diamond_shop.service.OrderService;
+import vn.fpt.diamond_shop.util.logger.LogActivities;
 
 import javax.validation.Valid;
 
@@ -25,23 +26,27 @@ public class CartController extends BaseController {
     private OrderService orderService;
 
     @PostMapping("list")
+    @LogActivities
     public ResponseEntity<Object> list(@CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody GetListCartRequest request) {
         request.setCustomerId(userPrincipal == null ? null : userPrincipal.getId());
         return ok(orderService.listCart(request));
     }
     @PostMapping("add_card")
+    @LogActivities
     public ResponseEntity<Object> addCart(@CurrentUser UserPrincipal userPrincipal,@Valid @RequestBody AddCartRequest request) {
         request.setCustomerId(userPrincipal == null ? null : userPrincipal.getId());
         return ok(orderService.addCart(request));
     }
 
     @PostMapping("update")
+    @LogActivities
     public ResponseEntity<Object> updateCart(@CurrentUser UserPrincipal userPrincipal,@Valid @RequestBody AddCartRequest request) {
         request.setCustomerId(userPrincipal == null ? null : userPrincipal.getId());
         return ok(orderService.updateCart(request));
     }
 
     @PostMapping("delete")
+    @LogActivities
     public ResponseEntity<Object> deleteCart(@CurrentUser UserPrincipal userPrincipal,@Valid @RequestBody DeleteCartRequest request) {
         return ok(orderService.deleteCart(request));
     }

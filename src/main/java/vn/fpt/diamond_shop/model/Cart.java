@@ -38,4 +38,7 @@ public class Cart {
 
     @Column(name = "status")
     private String status;
+
+    @Column(name = "size")
+    private String size;
 }

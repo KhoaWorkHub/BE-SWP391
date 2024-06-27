@@ -12,8 +12,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: tkhoa7815@gmail.com
-    password: iemk aazk fwmn yyvv
+    username: 01233047566thanh@gmail.com
+    password: dhzt hked rcvx dovy
     properties:
       mail:
         smtp:
@@ -59,7 +59,4 @@ minio:
   accessKey: LhvzlYoqSbl1Go3U2tRF
   secretKey: muIyi1QKM27OXxLofmCUk4C8cR82Qe9N7Ess2M6R
 
-springdoc:
-  swagger-ui:
-    config-url: /v1/swagger
-    disable-swagger-default-url: true
+

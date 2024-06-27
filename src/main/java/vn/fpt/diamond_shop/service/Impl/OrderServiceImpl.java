@@ -43,28 +43,49 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private EndUserRepository endUserRepository;
     private static String ACTIVE_CART = "active";
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private DeliveryRepository deliveryRepository;
+
     @Override
     public ResponseEntity<Object> orderList(GetListOrderRequest request) {
         if(request.getLimit() == null){
-            request.setLimit(10);
+            request.setLimit(9);
         }
         if(request.getOffset() == null){
             request.setOffset(0);
         }
+        if(!StringUtils.isEmpty(request.getPhoneNumber())) {
+            EndUser endUserByPhoneNumber = endUserRepository.findEndUserByPhoneNumber(request.getPhoneNumber());
+            if(endUserByPhoneNumber != null){
+                request.setCustomerId(endUserByPhoneNumber.getAccountId());
+            }
+        }
+        Page<Orders> ordersPage = null;
+        ordersPage = ordersRepository.findAllOrderByCustomerIdOrderByCreatedAtDesc(request.getCustomerId(), PageRequest.of(request.getOffset()/ request.getLimit(), request.getLimit(), Sort.by(Sort.Direction.DESC, "id")));
+
         Page<OrderDetail> orderDetailsPage = null;
         if(StringUtils.isEmpty(request.getStatus())){
-            orderDetailsPage = orderDetailRepository.findAllByCustomerIdOrderByCreatedAtDesc(request.getCustomerId(),PageRequest.of(request.getOffset(), request.getLimit(), Sort.by(Sort.Direction.DESC, "id")));
+            orderDetailsPage = orderDetailRepository.findAllByCustomerIdOrderByCreatedAtDesc(request.getCustomerId(),PageRequest.of(request.getOffset()/ request.getLimit(), request.getLimit(), Sort.by(Sort.Direction.DESC, "id")));
         }else{
-            orderDetailsPage = orderDetailRepository.findAllByCustomerIdAndStatusOrderByCreatedAtDesc(request.getCustomerId(), request.getStatus(), PageRequest.of(request.getOffset(), request.getLimit(), Sort.by(Sort.Direction.DESC, "id")));
-
+            orderDetailsPage = orderDetailRepository.findAllByCustomerIdAndStatusOrderByCreatedAtDesc(request.getCustomerId(), request.getStatus(), PageRequest.of(request.getOffset()/ request.getLimit(), request.getLimit(), Sort.by(Sort.Direction.DESC, "id")));
         }
-        List<OrderDetail> orderDetails = orderDetailsPage.getContent();
+        List<OrdersListAllUser> ordersListAllUsers = new ArrayList<>();
+        for(Orders order : ordersPage){
+            OrdersListAllUser ordersListAllUser = new OrdersListAllUser();
+            BeanUtils.copyProperties(order, ordersListAllUser);
+            List<OrderDetail> allByUniqueOrderId = orderDetailRepository.findAllByUniqueOrderId(order.getUniqueOrderId());
+            ordersListAllUser.setOrderDetails(allByUniqueOrderId);
+            ordersListAllUser.setDeliveryInfo(deliveryRepository.findAllByOrderId(order.getUniqueOrderId()));
+            ordersListAllUser.setPhoneNumber(request.getPhoneNumber());
+            ordersListAllUsers.add(ordersListAllUser);
+        }
         Meta meta = new Meta(request.getRequestId(), 200, "success", HttpStatus.OK.toString());
         meta.setLimit(request.getLimit());
         meta.setOffset(request.getOffset());
         meta.setTotal(Integer.valueOf(String.valueOf(orderDetailsPage.getTotalElements()))) ;
-        BaseResponse response = new BaseResponse(meta,orderDetails);
-
+        BaseResponse response = new BaseResponse(meta,ordersListAllUsers);
         return ResponseEntity.ok(response);
     }
 
@@ -141,7 +162,7 @@ public class OrderServiceImpl implements OrderService {
                 //update
                 byCustomerIdAndAndJewelryId.setQuantity(byCustomerIdAndAndJewelryId.getQuantity() + request.getQuantity());
                 byCustomerIdAndAndJewelryId.setUpdatedAt(new java.util.Date());
-                cartRepository.updateByUserIdAndJewelryId(request.getCustomerId(), request.getJewelryId(), byCustomerIdAndAndJewelryId.getQuantity(), byCustomerIdAndAndJewelryId.getUpdatedAt(), byCustomerIdAndAndJewelryId.getStatus());
+                cartRepository.updateByUserIdAndJewelryId(request.getCustomerId(), request.getJewelryId(), byCustomerIdAndAndJewelryId.getQuantity(), byCustomerIdAndAndJewelryId.getUpdatedAt(), byCustomerIdAndAndJewelryId.getStatus(), request.getSize());
             } else {
                 //insert
                 Cart cart = new Cart();
@@ -150,6 +171,7 @@ public class OrderServiceImpl implements OrderService {
                 cart.setUserId(request.getCustomerId());
                 cart.setCreatedAt(new Date(new java.util.Date().getTime()));
                 cart.setStatus(ACTIVE_CART);
+                cart.setSize(request.getSize());
                 cartRepository.save(cart);
             }
 
@@ -170,10 +192,11 @@ public class OrderServiceImpl implements OrderService {
             //update
             byCustomerIdAndAndJewelryId.setQuantity(byCustomerIdAndAndJewelryId.getQuantity() + request.getQuantity());
             byCustomerIdAndAndJewelryId.setUpdatedAt(new java.util.Date());
+            byCustomerIdAndAndJewelryId.setSize(request.getSize());
             if(!StringUtils.isEmpty(request.getStatus())){
                 byCustomerIdAndAndJewelryId.setStatus(request.getStatus());
             }
-            cartRepository.updateByUserIdAndJewelryId(request.getCustomerId(), request.getJewelryId(), byCustomerIdAndAndJewelryId.getQuantity(), byCustomerIdAndAndJewelryId.getUpdatedAt(), byCustomerIdAndAndJewelryId.getStatus());
+            cartRepository.updateByUserIdAndJewelryId(request.getCustomerId(), request.getJewelryId(), byCustomerIdAndAndJewelryId.getQuantity(), byCustomerIdAndAndJewelryId.getUpdatedAt(), byCustomerIdAndAndJewelryId.getStatus(), request.getSize());
         }
         return true;
     }
@@ -185,8 +208,68 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderDetail detail(GetOrderDetailRequest request) {
-        Optional<OrderDetail> orderDetail = orderDetailRepository.findById(request.getOrderId());
-        return orderDetail.get();
+    public Object detail(GetOrderDetailRequest request) {
+        Orders order = ordersRepository.findById(request.getOrderId()).orElseThrow(() -> new DiamondShopException(400, "Order not found"));
+
+        List<OrdersListAllUser> ordersListAllUsers = new ArrayList<>();
+            OrdersListAllUser ordersListAllUser = new OrdersListAllUser();
+            BeanUtils.copyProperties(order, ordersListAllUser);
+            List<OrderDetail> allByUniqueOrderId = orderDetailRepository.findAllByUniqueOrderId(order.getUniqueOrderId());
+            ordersListAllUser.setOrderDetails(allByUniqueOrderId);
+            ordersListAllUser.setDeliveryInfo(deliveryRepository.findAllByOrderId(order.getUniqueOrderId()));
+            //ordersListAllUser.setPhoneNumber(request.getPhoneNumber());
+            ordersListAllUsers.add(ordersListAllUser);
+
+        Meta meta = new Meta(request.getRequestId(), 200, "success", HttpStatus.OK.toString());
+        BaseResponse response = new BaseResponse(meta, ordersListAllUsers);
+
+        return response;
+    }
+
+    @Override
+    public ResponseEntity<Object> orderListAllUser(GetListOrderRequest request) {
+        if(request.getLimit() == null){
+            request.setLimit(10);
+        }
+        if(request.getOffset() == null){
+            request.setOffset(0);
+        }
+        Page<Orders> ordersPage = null;
+        if(StringUtils.isEmpty(request.getStatus())){
+            ordersPage = ordersRepository.findAllOrderByOrderByCreatedAtDesc(PageRequest.of(request.getOffset()/request.getLimit(), request.getLimit(), Sort.by(Sort.Direction.DESC, "id")));
+        }else{
+            ordersPage = ordersRepository.findAllOrderByStatusOrderByCreatedAtDesc(request.getStatus(), PageRequest.of(request.getOffset()/request.getLimit(), request.getLimit(), Sort.by(Sort.Direction.DESC, "id")));
+
+        }
+        List<Orders> orderDetails = ordersPage.getContent();
+        List<OrdersListAllUser> ordersListAllUsers = new ArrayList<>();
+        for(Orders order : orderDetails){
+            OrdersListAllUser ordersListAllUser = new OrdersListAllUser();
+            BeanUtils.copyProperties(order, ordersListAllUser);
+            List<OrderDetail> allByUniqueOrderId = orderDetailRepository.findAllByUniqueOrderId(order.getUniqueOrderId());
+            ordersListAllUser.setOrderDetails(allByUniqueOrderId);
+            ordersListAllUser.setDeliveryInfo(deliveryRepository.findAllByOrderId(order.getUniqueOrderId()));
+            ordersListAllUsers.add(ordersListAllUser);
+        }
+        for(OrdersListAllUser ordersListAllUser : ordersListAllUsers){
+            Optional<EndUser> endUserByAccountId = endUserRepository.findEndUserByAccountId(ordersListAllUser.getCustomerId());
+            EndUser endUser = endUserByAccountId.get();
+            ordersListAllUser.setPhoneNumber(endUser != null ? endUser.getPhoneNumber() : null);
+        }
+        Meta meta = new Meta(request.getRequestId(), 200, "success", HttpStatus.OK.toString());
+        meta.setLimit(request.getLimit());
+        meta.setOffset(request.getOffset());
+        meta.setTotal(Integer.valueOf(String.valueOf(ordersPage.getTotalElements()))) ;
+        BaseResponse response = new BaseResponse(meta,ordersListAllUsers);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    public Boolean updateOrder(UpdateOrderRequest request) {
+        EndUser endUserByPhoneNumber = endUserRepository.findEndUserByPhoneNumber(request.getPhoneNumber());
+
+//        ordersRepository.findAllOrderByOrderByCreatedAtDesc()
+        return null;
     }
 }

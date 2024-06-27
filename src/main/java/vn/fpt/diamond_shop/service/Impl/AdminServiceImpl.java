@@ -3,6 +3,8 @@ package vn.fpt.diamond_shop.service.Impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import vn.fpt.diamond_shop.model.EndUser;
+import vn.fpt.diamond_shop.repository.EndUserRepository;
 import vn.fpt.diamond_shop.repository.UserRepository;
 import vn.fpt.diamond_shop.repository.UserRoleRepository;
 import vn.fpt.diamond_shop.request.ManagerModifyAccountRequest;
@@ -12,6 +14,8 @@ import vn.fpt.diamond_shop.security.model.*;
 import vn.fpt.diamond_shop.service.AdminService;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -19,10 +23,12 @@ public class AdminServiceImpl implements AdminService {
 
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private UserRoleRepository userRoleRepository;
-    private RoleRepository roleRepository;
+    @Autowired
+    private EndUserRepository endUserRepository;
+    @Autowired
+    private BackGroundJobService backGroundJobService;
 
     @Override
     public void changeInforAccount(ManagerModifyAccountRequest request) {
@@ -32,15 +38,17 @@ public class AdminServiceImpl implements AdminService {
         }
 
         User user = userRepository.findById(request.getAccountId()).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setModifiedAt(new Date());
         if (request.getEmail() != null)
             user.setEmail(request.getEmail());
         if (request.getFullName() != null) {
             user.setName(request.getFullName());
         }
         if (request.isDeactivate()) {
-            deactivateAccount(request.getAccountId());
+//            deactivateAccount(request.getAccountId());
+            user.setActive(false);
         } else {
-            activateAccount(request.getAccountId());
+//            activateAccount(request.getAccountId());
         }
         if (request.getRoleId() != null) {
             setRole(request.getAccountId(), request.getRoleId());
@@ -71,19 +79,18 @@ public class AdminServiceImpl implements AdminService {
         return responses;
     }
 
-    @Override
-    public List<Role> listRole() {
-        return roleRepository.findAll();
-    }
-
     private void deactivateAccount(Long accountId) {
         User user = userRepository.findById(accountId).orElseThrow(() -> new RuntimeException("User not found"));
         user.setActive(false);
+        user.setModifiedAt(new Date());
+        userRepository.save(user);
     }
 
     private void activateAccount(Long accountId) {
         User user = userRepository.findById(accountId).orElseThrow(() -> new RuntimeException("User not found"));
         user.setActive(true);
+        user.setModifiedAt(new Date());
+        userRepository.save(user);
     }
 
     @Override
@@ -100,5 +107,16 @@ public class AdminServiceImpl implements AdminService {
         role.setRoleId(roleId);
         role.setAccountId(accountId);
         userRoleRepository.save(role);
+    }
+
+    @Override
+    public List<EndUser> searchAccount() {
+        return endUserRepository.findAll();
+
+    }
+
+    @Override
+    public void checkSendMailCoupon() {
+        backGroundJobService.checkAndSendCoupon();
     }
 }

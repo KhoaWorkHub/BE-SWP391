@@ -27,7 +27,8 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
             "c.createdBy as created_by,\n" +
             "j.name as jewelry_title,\n" +
             "j.materialPrices as price_items,\n" +
-            "i.url as image_url " +
+            "i.url as image_url, " +
+            "c.size as size"+
             ") FROM \n" +
             "Cart c \n" +
             "left join Jewelry j on\n" +
@@ -48,12 +49,13 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     @Query(value = "UPDATE Cart c SET "+
             "c.quantity = :quantity,\n" +
             "c.updatedAt = :updatedAt,\n" +
-            "c.status = :status \n" +
+            "c.status = :status, \n" +
+            "c.size = :size \n" +
             " WHERE " +
             " (:userId is null or c.userId = :userId)" +
             "and (:jewelryId is null or c.jewelryId = :jewelryId)"
     )
-    void updateByUserIdAndJewelryId(@Param("userId")Long userId,@Param("jewelryId") Long jewelryId,@Param("quantity")  Integer quantity,@Param("updatedAt")  Date updatedAt,@Param("status")  String status);
+    void updateByUserIdAndJewelryId(@Param("userId")Long userId,@Param("jewelryId") Long jewelryId,@Param("quantity")  Integer quantity,@Param("updatedAt")  Date updatedAt,@Param("status")  String status,@Param("size")  String size);
     @Query(value = "select new vn.fpt.diamond_shop.response.ListCartResponse("+
             "c.id as id,\n" +
             "c.userId as customer_id,\n" +
@@ -64,7 +66,8 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
             "c.createdBy as created_by,\n" +
             "j.name as jewelry_title,\n" +
             "j.materialPrices as price_items,\n" +
-            "i.url as image_url " +
+            "i.url as image_url, " +
+            "c.size as size"+
             ") FROM \n" +
             "Cart c \n" +
             "left join Jewelry j on\n" +

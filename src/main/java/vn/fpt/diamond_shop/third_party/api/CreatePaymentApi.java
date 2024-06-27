@@ -35,7 +35,4 @@ public class CreatePaymentApi {
         }
     }
 
-    public static void main(String[] args) {
-        System.out.println(new CreatePaymentApi().create("requestIdddaaa11", "orderIdddaa11", "orderDetailddaad11", 10000, PayTypeEnum.BANK).getData().getPaymentUrl());
-    }
 }

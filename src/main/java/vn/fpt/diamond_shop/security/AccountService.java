@@ -22,6 +22,7 @@ import vn.fpt.diamond_shop.service.Impl.OtpService;
 
 import javax.transaction.Transactional;
 import java.time.OffsetDateTime;
+import java.util.Date;
 
 @Service
 public class AccountService {
@@ -60,6 +61,7 @@ public class AccountService {
         user.setEmail(registerRequest.getEmail());
         user.setProvider(AuthProvider.local);
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        user.setCreatedAt(new Date());
         Long userId = userRepository.save(user).getId();
 
         UserRole userRole = new UserRole();
@@ -84,6 +86,7 @@ public class AccountService {
         endUserRepository.save(endUser);
 
     }
+
     @Transactional
     public void registerV2(SignUpRequest registerRequest) {
         if (userRepository.existsByEmail(registerRequest.getEmail())) {

@@ -6,6 +6,7 @@ public enum StatusOrder {
     PAYMENT("payment",2),
     DELIVERY("delivery",3),
     DONE("success",4),
+    CANCEL("cancel",5),
     ;
 
 

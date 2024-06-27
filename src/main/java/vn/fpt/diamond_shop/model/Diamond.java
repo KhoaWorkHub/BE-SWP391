@@ -18,8 +18,8 @@ public class Diamond {
     private Long id;
     @Column(name = "carat")
     private int carat;
-    @Column(name = "quantity")
-    private Integer quantity;
+    @Column(name = "price")
+    private Long price;
     @Column(name = "clarity_id")
     private Long clarityId;
     @Column(name = "cut_id")
@@ -41,6 +41,9 @@ public class Diamond {
 
     @Column(name = "update_at")
     private OffsetDateTime updateAt;
+
+    @Column(name = "name")
+    private String name;
 
     public Diamond(int carat, Long clarityId, Long cutId, Long polishId, Long colorId, Long shapeId) {
         this.carat = carat;

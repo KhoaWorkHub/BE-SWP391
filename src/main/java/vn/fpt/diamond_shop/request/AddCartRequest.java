@@ -18,4 +18,5 @@ public class AddCartRequest extends BaseRequest{
     private Integer quantity;
     private String status;
     private String phoneNumber;
+    private String size;
 }

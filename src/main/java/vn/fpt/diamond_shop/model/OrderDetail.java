@@ -27,7 +27,6 @@ public class OrderDetail {
     @Column(name = "order_date")
     private Date orderDate;
 
-
     @Column(name = "quantity_number")
     private Integer quantityNumber;
 
@@ -37,10 +36,8 @@ public class OrderDetail {
     @Column(name = "customer_id")
     private Long customerId;
 
-
     @Column(name = "total_price")
     private Long totalPrice;
-
 
     @Column(name = "updated_at")
     private Date updatedAt;

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import vn.fpt.diamond_shop.request.CouponsMail;
 import vn.fpt.diamond_shop.request.InvoiceMail;
 import vn.fpt.diamond_shop.service.MailService;
 
@@ -41,6 +42,19 @@ public class MailServiceImpl implements MailService {
             Map<String, Object> param = new HashMap<>();
             param.put("order", mail);
             push(email, subject, param, "invoice_mail_template.ftl");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void sendCoupon(String email, String subject, CouponsMail mail) {
+        try {
+            Map<String, Object> param = new HashMap<>();
+            param.put("code", mail.getCode());
+            param.put("expiredDate", mail.getExpiredDate());
+            param.put("percent", mail.getPercent());
+            push(email, subject, param, "coupons_mail_template.ftl");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
