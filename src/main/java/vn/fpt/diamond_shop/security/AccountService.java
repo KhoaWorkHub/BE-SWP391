@@ -13,6 +13,7 @@ import vn.fpt.diamond_shop.repository.AddressRepository;
 import vn.fpt.diamond_shop.repository.EndUserRepository;
 import vn.fpt.diamond_shop.repository.UserRepository;
 import vn.fpt.diamond_shop.repository.UserRoleRepository;
+import vn.fpt.diamond_shop.response.ChangeUserProfileResponse;
 import vn.fpt.diamond_shop.response.ImageInformation;
 import vn.fpt.diamond_shop.response.UserProfileResponse;
 import vn.fpt.diamond_shop.security.exception.BadRequestException;
@@ -123,9 +124,10 @@ public class AccountService {
 
     }
 
-    public void changeProfile(ChangeProfileRequest changeProfileRequest) {
+    public ChangeUserProfileResponse changeProfile(UserPrincipal currentUser,
+                                                   ChangeProfileRequest changeProfileRequest) {
 
-        User account = userRepository.findByEmail(changeProfileRequest.getEmail()).orElseThrow(() -> new BadRequestException("User not found"));
+        User account = userRepository.findById(currentUser.getId()).orElseThrow(() -> new BadRequestException("User not found"));
         EndUser endUser = endUserRepository.findEndUserByAccountId(account.getId()).orElseThrow(() -> new BadRequestException("EndUser not found"));
         Address address = addressRepository.findById(endUser.getAddress()).orElseGet(Address::new);
 
@@ -134,7 +136,7 @@ public class AccountService {
         address.setCity(changeProfileRequest.getCity());
         address.setWard(changeProfileRequest.getWard());
         address.setExtra(changeProfileRequest.getExtra());
-        addressRepository.save(address);
+        address = addressRepository.save(address);
 
         endUser.setFullName(changeProfileRequest.getFullName());
         endUser.setPhoneNumber(changeProfileRequest.getPhoneNumber());
@@ -143,11 +145,24 @@ public class AccountService {
 
         // if user has not address, set address = accountId to add new address
         if (endUser.getAddress() == null) {
-            endUser.setAddress(account.getId());
+            endUser.setAddress(address.getId());
         }
         endUser.setAge(changeProfileRequest.getAge());
         endUser.setUpdateAt(OffsetDateTime.now());
         endUserRepository.save(endUser);
+
+        ChangeUserProfileResponse response = new ChangeUserProfileResponse();
+        response.setEmail(account.getEmail());
+        response.setPhoneNumber(endUser.getPhoneNumber());
+        response.setFullName(endUser.getFullName());
+        response.setDateOfBirth(endUser.getDateOfBirth());
+        response.setProvince(address.getProvince());
+        response.setAge(endUser.getAge());
+        response.setDistrict(address.getDistrict());
+        response.setCity(address.getCity());
+        response.setWard(address.getWard());
+        response.setExtra(address.getExtra());
+        return response;
     }
 
     public UserProfileResponse profile(Long accountId) {

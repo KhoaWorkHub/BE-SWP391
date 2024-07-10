@@ -8,7 +8,9 @@ public enum RoleEnum {
 
     MANAGER(3L),
 
-    SALE(4L);
+    SALE(4L),
+
+    DELIVERY(5L);
 
     private Long id;
 

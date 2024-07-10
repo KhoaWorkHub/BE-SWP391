@@ -36,4 +36,16 @@ public class OrdersListAllUser {
     private Delivery deliveryInfo;
 
     private List<OrderDetail> orderDetails;
+
+    public OrdersListAllUser(Long id, String uniqueOrderId, Date orderDate, String status, Long customerId, Long totalPrice, Date createdAt, Date updatedAt, String phoneNumber) {
+        this.id = id;
+        this.uniqueOrderId = uniqueOrderId;
+        this.orderDate = orderDate;
+        this.status = status;
+        this.totalPrice = totalPrice;
+        this.customerId = customerId;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.phoneNumber = phoneNumber;
+    }
 }

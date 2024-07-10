@@ -5,9 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.fpt.diamond_shop.constants.UrlConstants;
-import vn.fpt.diamond_shop.request.GetListDeliveryRequest;
-import vn.fpt.diamond_shop.security.CurrentUser;
-import vn.fpt.diamond_shop.security.UserPrincipal;
 import vn.fpt.diamond_shop.service.AdminService;
 import vn.fpt.diamond_shop.util.logger.LogActivities;
 

@@ -21,6 +21,9 @@ public class Polish {
     @Column(name = "polish", unique = true)
     private DiamondPolishEnum polish;
 
+    @Column(name = "added_price")
+    private int addedPrice;
+
     @Column(name = "create_at")
     private OffsetDateTime createAt;
 

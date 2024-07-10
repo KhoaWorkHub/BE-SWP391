@@ -11,7 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChangeProfileRequest {
-    @JsonIgnore
     private String email;
     private String phoneNumber;
     private String password;

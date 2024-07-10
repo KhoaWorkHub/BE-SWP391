@@ -1,5 +1,6 @@
 package vn.fpt.diamond_shop.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import vn.fpt.diamond_shop.constants.DiamondColorEnum;

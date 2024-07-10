@@ -44,4 +44,10 @@ public class OrderDetail {
 
     @Column(name = "unique_order_id")
     private String uniqueOrderId;
+
+    @Column(name = "sale_id")
+    private Long saleId;
+
+    @Column(name = "size")
+    private String size;
 }

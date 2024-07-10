@@ -7,5 +7,5 @@ import java.util.UUID;
 
 public interface DiamondRepository extends JpaRepository<Diamond, Long> {
 
-
+     Diamond findAllByName(String name);
 }

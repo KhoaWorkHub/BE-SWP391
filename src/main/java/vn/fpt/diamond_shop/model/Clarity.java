@@ -18,9 +18,9 @@ public class Clarity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
     @Column(name = "clarity", unique = true)
-    private DiamondClarityEnum clarity;
+    private String clarity;
 
     @Column(name = "create_at")
     private OffsetDateTime createAt;
@@ -28,8 +28,8 @@ public class Clarity {
     @Column(name = "update_at")
     private OffsetDateTime updateAt;
 
-    public Clarity(DiamondClarityEnum clarity) {
-        this.clarity = clarity;
-        this.createAt = OffsetDateTime.now();
-    }
+//    public Clarity(DiamondClarityEnum clarity) {
+//        this.clarity = clarity;
+//        this.createAt = OffsetDateTime.now();
+//    }
 }

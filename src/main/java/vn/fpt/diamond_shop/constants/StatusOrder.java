@@ -2,7 +2,7 @@ package vn.fpt.diamond_shop.constants;
 
 public enum StatusOrder {
     INIT("order",0),
-    CREATE_PAYMENT("watting payment",1),
+    CREATE_PAYMENT("waiting payment",1),
     PAYMENT("payment",2),
     DELIVERY("delivery",3),
     DONE("success",4),

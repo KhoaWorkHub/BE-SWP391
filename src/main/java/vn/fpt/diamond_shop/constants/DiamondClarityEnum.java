@@ -1,15 +1,28 @@
 package vn.fpt.diamond_shop.constants;
 
 public enum DiamondClarityEnum {
-    IF,
-    VVS1,
-    VVS2,
-    VS1,
-    VS2,
-    SI1,
-    SI2,
-    SI3,
-    I1,
-    I2,
-    I3;
+    IF(20),
+
+    VVS1(21),
+
+    VVS2(22),
+
+    VS1(23),
+
+    VS2(24);
+
+    final long id;
+
+    DiamondClarityEnum(long id) {
+        this.id = id;
+    }
+
+    public static DiamondClarityEnum of(Long id) {
+        for (DiamondClarityEnum value : values()) {
+            if (value.id == id) {
+                return value;
+            }
+        }
+        return null;
+    }
 }

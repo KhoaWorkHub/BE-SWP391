@@ -3,6 +3,7 @@ package vn.fpt.diamond_shop.service.Impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import vn.fpt.diamond_shop.jobs.SendCouponMailJob;
 import vn.fpt.diamond_shop.model.EndUser;
 import vn.fpt.diamond_shop.repository.EndUserRepository;
 import vn.fpt.diamond_shop.repository.UserRepository;
@@ -14,9 +15,9 @@ import vn.fpt.diamond_shop.security.model.*;
 import vn.fpt.diamond_shop.service.AdminService;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -28,7 +29,7 @@ public class AdminServiceImpl implements AdminService {
     @Autowired
     private EndUserRepository endUserRepository;
     @Autowired
-    private BackGroundJobService backGroundJobService;
+    private SendCouponMailJob sendCouponMailJob;
 
     @Override
     public void changeInforAccount(ManagerModifyAccountRequest request) {
@@ -65,6 +66,7 @@ public class AdminServiceImpl implements AdminService {
         users.forEach(e -> {
             UserRole role = userRoleRepository.findAllByAccountId(e.getId()).get(0);
             RoleEnum roleEnum = RoleEnum.getRoleEnumById(role.getRoleId());
+            EndUser endUserByAccountId = endUserRepository.findEndUserByAccountId(e.getId()).get();
             if (!e.getId().equals(userPrincipal.getId())) {
                 responses.add(new ManagerListAccountResponse(
                         e.getId(),
@@ -73,7 +75,8 @@ public class AdminServiceImpl implements AdminService {
                         e.getEmailVerified(),
                         roleEnum.name(),
                         e.getProvider().name(),
-                        e.isActive()));
+                        e.isActive(),
+                        endUserByAccountId.getPhoneNumber()));
             }
         });
         return responses;
@@ -117,6 +120,6 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public void checkSendMailCoupon() {
-        backGroundJobService.checkAndSendCoupon();
+        sendCouponMailJob.checkAndSendCoupon();
     }
 }

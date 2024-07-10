@@ -18,19 +18,21 @@ public class Cut {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
     @Column(name = "cut", unique = true)
-    private DiamondCutEnum cut;
+    private String cut;
     @Column(name = "point")
     private int point;
+//    @Column(name = "added_price")
+//    private int addedPrice;
     @Column(name = "create_at")
     private OffsetDateTime createAt;
     @Column(name = "update_at")
     private OffsetDateTime updateAt;
 
-    public Cut(DiamondCutEnum cut, int point) {
-        this.cut = cut;
-        this.point = point;
-        this.createAt = OffsetDateTime.now();
-    }
+//    public Cut(DiamondCutEnum cut, int point) {
+//        this.cut = cut;
+//        this.point = point;
+//        this.createAt = OffsetDateTime.now();
+//    }
 }

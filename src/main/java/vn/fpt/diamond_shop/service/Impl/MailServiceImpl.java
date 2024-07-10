@@ -7,7 +7,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import vn.fpt.diamond_shop.request.CouponsMail;
-import vn.fpt.diamond_shop.request.InvoiceMail;
+import vn.fpt.diamond_shop.request.SendInvoiceRequest;
 import vn.fpt.diamond_shop.service.MailService;
 
 import freemarker.template.Configuration;
@@ -37,10 +37,14 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    public void sendInvoice(String email, String subject, InvoiceMail mail) {
+    public void sendInvoice(String email, String subject, SendInvoiceRequest mail) {
         try {
             Map<String, Object> param = new HashMap<>();
-            param.put("order", mail);
+            param.put("mail", mail.getMail());
+            param.put("orderId", mail.getOrderId());
+            param.put("date", mail.getDate());
+            param.put("address", mail.getAddress());
+            param.put("products", mail.getProducts());
             push(email, subject, param, "invoice_mail_template.ftl");
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -76,5 +80,17 @@ public class MailServiceImpl implements MailService {
         helper.setText(htmlContent, true);
 
         emailSender.send(message);
+    }
+
+    public String getHtmlContent(Map<String, Object> attribute, String templateName) {
+        try {
+            freemarkerConfig.setTemplateLoader(new ClassTemplateLoader(getClass(), "/templates"));
+            Template template = freemarkerConfig.getTemplate(templateName);
+            StringWriter stringWriter = new StringWriter();
+            template.process(attribute, stringWriter);
+            return stringWriter.toString();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

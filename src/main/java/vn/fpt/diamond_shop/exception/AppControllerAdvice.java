@@ -19,6 +19,7 @@ public class AppControllerAdvice extends BaseController {
             RuntimeException.class
     })
     public ResponseEntity<?> badReq(RuntimeException e) {
+        e.printStackTrace();
         log.error(e.getMessage(), e);
         return err(e.getMessage(), null);
     }

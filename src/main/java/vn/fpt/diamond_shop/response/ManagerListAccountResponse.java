@@ -20,4 +20,5 @@ public class ManagerListAccountResponse {
     private String role;
     private String accountProvider;
     private boolean isActive = true;
+    private String phoneNumber;
 }

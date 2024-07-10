@@ -41,4 +41,7 @@ public class Cart {
 
     @Column(name = "size")
     private String size;
+
+    @Column(name = "sale_id")
+    private Long saleId;
 }

@@ -15,7 +15,8 @@ import lombok.NoArgsConstructor;
 public class UpdateOrderRequest extends BaseRequest{
     private Long customerId;
     private Long deliverId;
-    private Long orderId;
+    private String orderId;
     private String phoneNumber;
-    private String status;
+    private String statusOrder;
+    private String statusDelivery;
 }

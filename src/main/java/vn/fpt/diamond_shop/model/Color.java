@@ -18,9 +18,9 @@ public class Color {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
     @Column(name = "color", unique = true)
-    private DiamondColorEnum color;
+    private String color;
 
     @Column(name = "create_at")
     private OffsetDateTime createAt;
@@ -28,8 +28,8 @@ public class Color {
     @Column(name = "update_at")
     private OffsetDateTime updateAt;
 
-    public Color(DiamondColorEnum color) {
-        this.color = color;
-        this.createAt = OffsetDateTime.now();
-    }
+//    public Color(DiamondColorEnum color) {
+//        this.color = color;
+//        this.createAt = OffsetDateTime.now();
+//    }
 }

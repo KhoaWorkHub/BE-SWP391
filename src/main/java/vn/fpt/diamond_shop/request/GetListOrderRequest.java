@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 public class GetListOrderRequest extends BaseRequest{
     private Long customerId;
     private String phoneNumber;
+    private String orderId;
     private String status;
     private Integer limit;
     private Integer offset;

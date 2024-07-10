@@ -33,6 +33,9 @@ public class DeliveryServiceImpl implements DeliveryService {
     private OrdersRepository ordersRepository;
 
     @Autowired
+    private EndUserRepository endUserRepository;
+
+    @Autowired
     private OrderDetailRepository orderDetailRepository;
 
     @Override
@@ -43,7 +46,24 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public ResponseEntity<Object> getListDeliver() {
-        return ResponseEntity.ok(deliverRepository.findAllByOrderByIdDesc());
+        List<Deliver> allByOrderByIdDesc = deliverRepository.findAllByOrderByIdDesc();
+
+        List<DeliverListResponse> deliverListResponses = new ArrayList<>();
+        allByOrderByIdDesc.stream().forEach(
+                allByOrderByIdDescDeliver -> {
+                    DeliverListResponse deliverListResponse = new DeliverListResponse();
+                    deliverListResponse.setId(allByOrderByIdDescDeliver.getId());
+                    deliverListResponse.setUserId(allByOrderByIdDescDeliver.getUserId());
+                    deliverListResponse.setTotalOrder(allByOrderByIdDescDeliver.getTotalOrder());
+                    deliverListResponse.setTotalOrderFail(allByOrderByIdDescDeliver.getTotalOrderFail());
+                    deliverListResponse.setTotalOrderSuccess(allByOrderByIdDescDeliver.getTotalOrderSuccess());
+                    deliverListResponse.setStatus(allByOrderByIdDescDeliver.getStatus());
+                    deliverListResponse.setUserName(endUserRepository.findEndUserByAccountId(allByOrderByIdDescDeliver.getUserId()).get().getFullName());
+                    deliverListResponses.add(deliverListResponse);
+                }
+        );
+
+        return ResponseEntity.ok(deliverListResponses);
     }
 
     @Override
@@ -86,7 +106,12 @@ public class DeliveryServiceImpl implements DeliveryService {
             delivery.setOrderId(request.getOrderId());
             delivery.setStatusDate(new Date());
             delivery.setEndDateEstimated(date2);
-            delivery.setDeliverId(request.getDeliveryId() == null ? allDeleverByStatus.get(rand.nextInt(allDeleverByStatus.size())).getId() : request.getDeliveryId());
+            if(request.getDeliveryId() == null){
+                delivery.setDeliverId(allDeleverByStatus.get(rand.nextInt(allDeleverByStatus.size())).getUserId());
+            }else{
+                Deliver byId = deliverRepository.findById(request.getDeliveryId()).get();
+                delivery.setDeliverId(byId.getUserId());
+            }
             deliveryRepository.save(delivery);
         }else {
             //update

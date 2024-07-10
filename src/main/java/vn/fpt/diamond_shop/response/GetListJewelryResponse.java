@@ -27,5 +27,6 @@ public class GetListJewelryResponse {
     private Long imageId;
 
     private String url;
+
     private String description;
 }

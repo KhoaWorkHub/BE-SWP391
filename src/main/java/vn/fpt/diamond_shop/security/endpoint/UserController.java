@@ -30,12 +30,9 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("/change-profile")
-    public ResponseEntity<?> changeProfile(@CurrentUser UserPrincipal userPrincipal, @RequestBody ChangeProfileRequest changeProfileRequest) {
-        User user = userRepository.findById(userPrincipal.getId()).orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
-
-        changeProfileRequest.setEmail(user.getEmail());
-        accountService.changeProfile(changeProfileRequest);
-        return ok("Change profile successfully");
+    public ResponseEntity<?> changeProfile(@CurrentUser UserPrincipal userPrincipal,
+                                           @RequestBody ChangeProfileRequest changeProfileRequest) {
+        return ok(accountService.changeProfile(userPrincipal, changeProfileRequest));
     }
 
     @PostMapping("/change-profile/avt")

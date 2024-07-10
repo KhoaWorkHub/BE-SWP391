@@ -16,6 +16,9 @@ public class Origin {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "added_price")
+    private int addedPrice;
+
     @Column(name = "origin_name", unique = true)
     private String originName;
 
