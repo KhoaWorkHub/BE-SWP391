@@ -4,6 +4,7 @@ public enum StatusDelivery {
     WAITING("waiting for delivery",1),
     DELIVERING("being delivered",2),
     SUCCESS_DELIVERY("successful delivery",3),
+    FAIL_DELIVERY("fail delivery",3),
     ;
 
 

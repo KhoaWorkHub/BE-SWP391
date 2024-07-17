@@ -22,8 +22,8 @@ public class Shape {
     @Column(name = "shape", unique = true)
     private String shape;
 
-//    @Column(name = "added_price")
-//    private int addedPrice;
+    @Column(name = "added_price")
+    private int addedPrice;
 
     @Column(name = "image")
     private Long imageMetadata;

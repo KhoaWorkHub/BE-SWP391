@@ -23,13 +23,17 @@ public class Cut {
     private String cut;
     @Column(name = "point")
     private int point;
-//    @Column(name = "added_price")
-//    private int addedPrice;
+
     @Column(name = "create_at")
     private OffsetDateTime createAt;
     @Column(name = "update_at")
     private OffsetDateTime updateAt;
 
+    @Column(name = "added_price")
+    private int addedPrice;
+
+    @Column(name = "wage")
+    private int wage;
 //    public Cut(DiamondCutEnum cut, int point) {
 //        this.cut = cut;
 //        this.point = point;

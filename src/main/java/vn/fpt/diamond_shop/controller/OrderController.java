@@ -70,12 +70,14 @@ public class OrderController extends BaseController {
     }
 
     @PostMapping("sendMail")
+    @LogActivities
     public ResponseEntity<Object> sendMail(@RequestBody SendInvoiceRequest request) {
         orderService.sendMailInvoice(request);
         return ok("Send mail success");
     }
 
     @GetMapping("get_invoice")
+    @LogActivities
     public ResponseEntity<Object> getInvoice(@RequestParam String orderId) {
         return ok(orderService.getInvoice(orderId));
     }
@@ -94,11 +96,13 @@ public class OrderController extends BaseController {
     }
 
     @PostMapping("invoice_detail")
+    @LogActivities
     public ResponseEntity<Object> invoiceDetail(@Valid @RequestBody GetListOrderRequest request) {
         return ok(orderService.invoiceDetal(request));
     }
 
     @PostMapping("gia_info")
+    @LogActivities
     public ResponseEntity<Object> giaInfo(@Valid @RequestBody GetListOrderRequest request) {
         return ok(orderService.giaInfo(request));
     }

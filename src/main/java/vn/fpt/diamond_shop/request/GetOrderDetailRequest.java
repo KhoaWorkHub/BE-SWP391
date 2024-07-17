@@ -16,4 +16,5 @@ public class GetOrderDetailRequest extends BaseRequest{
     private Long customerId;
     private String phoneNumber;
     private Long orderId;
+    //private String uniqueOrderId;
 }

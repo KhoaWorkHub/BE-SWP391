@@ -28,6 +28,8 @@ public class Color {
     @Column(name = "update_at")
     private OffsetDateTime updateAt;
 
+    @Column(name = "added_price")
+    private int addedPrice;
 //    public Color(DiamondColorEnum color) {
 //        this.color = color;
 //        this.createAt = OffsetDateTime.now();

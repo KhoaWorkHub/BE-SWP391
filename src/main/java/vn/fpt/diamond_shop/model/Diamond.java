@@ -6,6 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -37,7 +38,7 @@ public class Diamond {
     @Column(name = "image_id")
     private Long imageId;
     @Column(name = "create_at")
-    private OffsetDateTime createAt;
+    private Date createAt;
 
     @Column(name = "update_at")
     private OffsetDateTime updateAt;
@@ -45,6 +46,11 @@ public class Diamond {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "price_diamond")
+    private Long priceDiamond;
+
+    @Column(name = "profit")
+    private Long profit;
     public Diamond(int carat, Long clarityId, Long cutId, Long polishId, Long colorId, Long shapeId) {
         this.carat = carat;
         this.clarityId = clarityId;
@@ -52,6 +58,5 @@ public class Diamond {
         this.polishId = polishId;
         this.colorId = colorId;
         this.shapeId = shapeId;
-        this.createAt = OffsetDateTime.now();
     }
 }

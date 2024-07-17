@@ -30,9 +30,9 @@ public class Polish {
     @Column(name = "update_at")
     private OffsetDateTime updateAt;
 
-    public Polish(DiamondPolishEnum polish) {
-        this.polish = polish;
-        this.createAt = OffsetDateTime.now();
-    }
+//    public Polish(DiamondPolishEnum polish) {
+//        this.polish = polish;
+//        this.createAt = OffsetDateTime.now();
+//    }
 
 }

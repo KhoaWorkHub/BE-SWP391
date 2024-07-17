@@ -8,6 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import vn.fpt.diamond_shop.constants.UrlConstants;
 import vn.fpt.diamond_shop.model.Diamond;
+import vn.fpt.diamond_shop.request.AddDiamondRequest;
 import vn.fpt.diamond_shop.request.CreateDiamondRequest;
 import vn.fpt.diamond_shop.service.DiamondService;
 import vn.fpt.diamond_shop.util.BaseResponse;
@@ -20,7 +21,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping(UrlConstants.BASIC_DIAMOND_URL)
-public class DiamondController {
+public class DiamondController extends BaseController{
 
     @Autowired
     private DiamondService diamondService;
@@ -32,9 +33,8 @@ public class DiamondController {
     }
 
     @PostMapping("/create")
-    @LogActivities
-    public ResponseEntity<?> create(@Valid @RequestBody CreateDiamondRequest request, BindingResult bindingResult) {
-        return new ResponseEntity<>(null, HttpStatus.OK);
+    public ResponseEntity<?> create(@Valid @RequestBody AddDiamondRequest request) {
+        return ok(diamondService.addDiamond(request));
     }
 
     @GetMapping("/list")
@@ -43,4 +43,14 @@ public class DiamondController {
         return BaseResponse.ok(diamondService.listDiamonds());
     }
 
+    @GetMapping("/list-all-diamond")
+    @LogActivities
+    public ResponseEntity<?> listAllDiamond() {
+        return BaseResponse.ok(diamondService.listAllDiamonds());
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<?> update(@Valid @RequestBody AddDiamondRequest request) {
+        return ok(diamondService.updateDiamond(request));
+    }
 }

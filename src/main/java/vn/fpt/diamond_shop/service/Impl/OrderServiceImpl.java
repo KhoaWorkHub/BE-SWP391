@@ -81,7 +81,11 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         Page<Orders> ordersPage = null;
-        ordersPage = ordersRepository.findAllOrderByCustomerIdOrderByCreatedAtDesc(request.getCustomerId(), PageRequest.of(request.getOffset() / request.getLimit(), request.getLimit(), Sort.by(Sort.Direction.DESC, "id")));
+        if (StringUtils.isEmpty(request.getStatus())) {
+            ordersPage = ordersRepository.findAllOrderByCustomerIdOrderByCreatedAtDesc(request.getCustomerId(), PageRequest.of(request.getOffset() / request.getLimit(), request.getLimit(), Sort.by(Sort.Direction.DESC, "id")));
+        }else{
+            ordersPage = ordersRepository.findAllOrderByCustomerIdAndStatusOrderByCreatedAtDesc(request.getCustomerId(), request.getStatus(), PageRequest.of(request.getOffset() / request.getLimit(), request.getLimit(), Sort.by(Sort.Direction.DESC, "id")));
+        }
 
         Page<OrderDetail> orderDetailsPage = null;
         if (StringUtils.isEmpty(request.getStatus())) {
@@ -253,6 +257,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Object detail(GetOrderDetailRequest request) {
         Orders order = ordersRepository.findById(request.getOrderId()).orElseThrow(() -> new DiamondShopException(400, "Order not found"));
+//        Orders order = ordersRepository.findByUniqueOrderId(request.getUniqueOrderId()).orElseThrow(() -> new DiamondShopException(400, "Order not found"));
 
         List<OrdersListAllUser> ordersListAllUsers = new ArrayList<>();
         OrdersListAllUser ordersListAllUser = new OrdersListAllUser();
@@ -277,7 +282,7 @@ public class OrderServiceImpl implements OrderService {
         if (request.getOffset() == null) {
             request.setOffset(0);
         }
-        Page<OrdersListAllUser> ordersListAllUsers2 = ordersRepository.searchAllOrders(request.getStatus(), request.getOrderId(), request.getPhoneNumber(), PageRequest.of(request.getOffset() / request.getLimit(), request.getLimit()));
+        Page<OrdersListAllUser> ordersListAllUsers2 = ordersRepository.searchAllOrders(request.getStatus(), request.getOrderId(), request.getPhoneNumber(), PageRequest.of(request.getOffset() / request.getLimit(), request.getLimit(),Sort.by(Sort.Direction.DESC, "id")));
 //        List<OrdersListAllUser> ordersListAllUsers = ordersRepository.searchAllOrders(request.getStatus(), request.getOrderId(), request.getPhoneNumber());
         for (OrdersListAllUser order : ordersListAllUsers2.getContent()) {
             List<OrderDetail> allByUniqueOrderId = orderDetailRepository.findAllByUniqueOrderId(order.getUniqueOrderId());
@@ -308,28 +313,40 @@ public class OrderServiceImpl implements OrderService {
         Orders ordersRepositoryById = ordersRepository.findByUniqueOrderId(request.getOrderId()).get();
         if (ordersRepositoryById != null) {
             //update order list
-            ordersRepositoryById.setStatus(request.getStatusOrder());
-            ordersRepository.save(ordersRepositoryById);
-            //order detail
-            List<OrderDetail> allByUniqueOrderId = orderDetailRepository.findAllByUniqueOrderId(ordersRepositoryById.getUniqueOrderId());
-            for (OrderDetail orderDetail : allByUniqueOrderId) {
-                orderDetail.setStatus(request.getStatusOrder());
-                orderDetailRepository.save(orderDetail);
+            if (Objects.nonNull(request.getStatusOrder())) {
+                ordersRepositoryById.setStatus(request.getStatusOrder());
+                ordersRepository.save(ordersRepositoryById);
+                //order detail
+                List<OrderDetail> allByUniqueOrderId = orderDetailRepository.findAllByUniqueOrderId(ordersRepositoryById.getUniqueOrderId());
+                for (OrderDetail orderDetail : allByUniqueOrderId) {
+                    orderDetail.setStatus(request.getStatusOrder());
+                    orderDetailRepository.save(orderDetail);
+                }
             }
+            if(StringUtils.isEmpty(request.getStatusDelivery())){
+                if(StatusOrder.DONE.equals(request.getStatusOrder())){
+                    request.setStatusDelivery(StatusDelivery.SUCCESS_DELIVERY.getValue());
+                }else if(StatusOrder.CANCEL.equals(request.getStatusOrder())){
+                    request.setStatusDelivery(StatusDelivery.FAIL_DELIVERY.getValue());
+                }
+            }
+
             //update delivery
-            Delivery delivery = deliveryRepository.findAllByOrderId(ordersRepositoryById.getUniqueOrderId());
-            delivery.setStatus(request.getStatusDelivery());
-            delivery.setUpdatedAt(new Date());
-            deliveryRepository.save(delivery);
-            //update deliver
-            Deliver deliverRepositoryByUserId = deliverRepository.findByUserId(delivery.getDeliverId());
-            deliverRepositoryByUserId.setTotalOrder(deliverRepositoryByUserId.getTotalOrder() + 1);
-            if (StatusDelivery.SUCCESS_DELIVERY.getValue().equals(request.getStatusDelivery())) {
-                deliverRepositoryByUserId.setTotalOrderSuccess(deliverRepositoryByUserId.getTotalOrderSuccess() + 1);
-            } else {
-                deliverRepositoryByUserId.setTotalOrderFail(deliverRepositoryByUserId.getTotalOrderFail() + 1);
+            if (Objects.nonNull(request.getStatusDelivery())) {
+                Delivery delivery = deliveryRepository.findAllByOrderId(ordersRepositoryById.getUniqueOrderId());
+                delivery.setStatus(request.getStatusDelivery());
+                delivery.setUpdatedAt(new Date());
+                deliveryRepository.save(delivery);
+                //update deliver
+                Deliver deliverRepositoryByUserId = deliverRepository.findById(delivery.getDeliverId()).get();
+                deliverRepositoryByUserId.setTotalOrder(deliverRepositoryByUserId.getTotalOrder() + 1);
+                if (StatusDelivery.SUCCESS_DELIVERY.getValue().equals(request.getStatusDelivery())) {
+                    deliverRepositoryByUserId.setTotalOrderSuccess(deliverRepositoryByUserId.getTotalOrderSuccess() + 1);
+                } else {
+                    deliverRepositoryByUserId.setTotalOrderFail(deliverRepositoryByUserId.getTotalOrderFail() + 1);
+                }
+                deliverRepository.save(deliverRepositoryByUserId);
             }
-            deliverRepository.save(deliverRepositoryByUserId);
         }
         return true;
     }
@@ -359,10 +376,8 @@ public class OrderServiceImpl implements OrderService {
         revenueData.setPriceDelivery(ordersRepository.getTotalStatusAmount(StatusOrder.DELIVERY.getValue()));
         revenueData.setPriceSuccess(ordersRepository.getTotalStatusAmount(StatusOrder.DONE.getValue()));
         revenueData.setPriceCancel(ordersRepository.getTotalStatusAmount(StatusOrder.CANCEL.getValue()));
-        Long totalPriceDone = ordersRepository.getTotalStatusAmount(StatusOrder.DONE.getValue());
-        Long totalPriceDelivery = ordersRepository.getTotalStatusAmount(StatusOrder.DELIVERY.getValue());
-        Long totalPrice = totalPriceDone + totalPriceDelivery;
-        revenueData.setTotalPrice(totalPrice);
+        revenueData.setTotalPrice(ordersRepository.getTotalStatusAmount(null));
+
         dashboardResponse.setRevenueData(revenueData);
         dashboardResponse.setOrderInfo(ordersData);
         return dashboardResponse;
@@ -383,7 +398,7 @@ public class OrderServiceImpl implements OrderService {
         List<DashboardResponse.SaleData> saleDataList = new ArrayList<>();
         List<Long> listSaleId = orderDetailRepository.getListSaleId(request.getCustomerId(), request.getStatus());
         for (Long saleId : listSaleId) {
-            if (saleId != null) {
+            if(saleId != null){
                 saleDataList.add(processSaleData(saleId));
             }
         }
@@ -409,7 +424,7 @@ public class OrderServiceImpl implements OrderService {
         invoiceDetailResponse.setCustomerName(endUserByAccountId.getFullName());
         List<OrderDetail> allByUniqueOrderId = orderDetailRepository.findAllByUniqueOrderId(request.getOrderId());
         List<InvoiceDetailResponse.Product> productList = new ArrayList<>();
-        if (allByUniqueOrderId != null) {
+        if(allByUniqueOrderId != null){
             for (OrderDetail orderDetail : allByUniqueOrderId) {
                 InvoiceDetailResponse.Product product = new InvoiceDetailResponse.Product();
                 product.setQuantity(orderDetail.getQuantityNumber());
@@ -433,13 +448,12 @@ public class OrderServiceImpl implements OrderService {
     private ClarityRepository clarityRepository;
     @Autowired
     private ColorRepository colorRepository;
-
     @Override
     public Object giaInfo(GetListOrderRequest request) {
         List<GIAInfoResponse> giaInfoResponseList = new ArrayList<>();
         GIAInfoResponse giaInfoResponse = new GIAInfoResponse();
         List<OrderDetail> allByUniqueOrderId = orderDetailRepository.findAllByUniqueOrderId(request.getOrderId());
-        if (allByUniqueOrderId != null) {
+        if(allByUniqueOrderId != null){
             for (OrderDetail orderDetail : allByUniqueOrderId) {
                 Diamond diamond = diamondRepository.findAllByName(orderDetail.getSize());
                 giaInfoResponse.setDiamond(diamond);
@@ -457,16 +471,15 @@ public class OrderServiceImpl implements OrderService {
         return giaInfoResponseList;
     }
 
-    private DashboardResponse.SaleData processSaleData(Long saleId) {
-        DashboardResponse.SaleData saleData = new DashboardResponse.SaleData();
-        saleData.setTotalPrice(orderDetailRepository.getSaleInfo(saleId, null));
-        saleData.setTotalOrder(orderDetailRepository.getOrderIdBySaleId(saleId, null).size());
-        saleData.setSaleId(saleId);
-        saleData.setTotalOrderSuccess(orderDetailRepository.getOrderIdBySaleId(saleId, StatusOrder.DONE.getValue()).size());
-        saleData.setTotalPriceSuccess(orderDetailRepository.getSaleInfo(saleId, StatusOrder.DONE.getValue()));
-        return saleData;
-    }
-
+    private DashboardResponse.SaleData processSaleData(Long saleId){
+    DashboardResponse.SaleData saleData = new DashboardResponse.SaleData();
+    saleData.setTotalPrice(orderDetailRepository.getSaleInfo(saleId, null));
+    saleData.setTotalOrder(orderDetailRepository.getOrderIdBySaleId(saleId, null).size());
+    saleData.setSaleId(saleId);
+    saleData.setTotalOrderSuccess(orderDetailRepository.getOrderIdBySaleId(saleId, StatusOrder.DONE.getValue()).size());
+    saleData.setTotalPriceSuccess(orderDetailRepository.getSaleInfo(saleId, StatusOrder.DONE.getValue()));
+    return saleData;
+}
     private void addInvoice(SendInvoiceRequest request) {
         Map<String, Object> attribute = new HashMap<>();
         attribute.put("orderId", request.getOrderId());
