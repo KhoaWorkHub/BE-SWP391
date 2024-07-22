@@ -1,5 +1,6 @@
 package vn.fpt.diamond_shop.service.Impl;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +11,7 @@ import vn.fpt.diamond_shop.constants.StatusOrder;
 import vn.fpt.diamond_shop.exception.DiamondShopException;
 import vn.fpt.diamond_shop.model.Coupon;
 import vn.fpt.diamond_shop.model.CouponsHistory;
+import vn.fpt.diamond_shop.model.EndUser;
 import vn.fpt.diamond_shop.repository.*;
 import vn.fpt.diamond_shop.request.AddCouponRequest;
 import vn.fpt.diamond_shop.request.ModifyCouponRequest;
@@ -23,11 +25,13 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Log4j2
 public class CouponServiceImpl implements CouponService {
 
     @Autowired
@@ -66,7 +70,7 @@ public class CouponServiceImpl implements CouponService {
         Coupon coupon = couponRepository.findByCouponsCode(couponCode.toUpperCase())
                 .orElseThrow(() -> new RuntimeException("Coupon not found"));
 
-        if (coupon.getExpirationDate().before(new java.util.Date())) {
+        if (coupon.getExpirationDate().before(new Date())) {
             throw new DiamondShopException("Coupon expired");
         }
         if (coupon.getQuantity() <= 0) {
@@ -109,6 +113,53 @@ public class CouponServiceImpl implements CouponService {
             }
         }
         return coupon;
+    }
+
+    @Override
+    public List<Coupon> getUsableCoupons(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new DiamondShopException("User not found"));
+        Date now = new Date();
+        List<Coupon> coupons = couponRepository.findAllByExpirationDateAfter(now);
+        coupons.removeIf(e -> {
+            boolean isUsed = couponsHistoryRepository.findByCouponsCodeAndCustomerId(e.getCouponsCode(), id).isPresent();
+            boolean isOutOfStock = e.getQuantity() <= 0;
+            boolean isNotEnoughCondition = true;
+            if (e.getDiscountType().equals(DiscountType.ALL.name())) {
+            } else if (e.getDiscountType().equals(DiscountType.PERSONAL.name())) {
+                if (e.getType().equals(CouponsConditionEnum.ACCOUNT_AGE.name())) {
+                    if (user.getCreatedAt() == null) {
+                        isNotEnoughCondition = false;
+                    } else {
+                        LocalDate var1 = Instant.ofEpochMilli(user.getCreatedAt().getTime())
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate();
+
+                        LocalDate var2 = Instant.ofEpochMilli(now.getTime())
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate();
+
+                        Period period = Period.between(var1, var2);
+                        int dayBetween = period.getDays();
+                        log.info("Account {} age: {}", user.getEmail(), dayBetween);
+                        //Check account age
+                        if (dayBetween >= e.getValue()) {
+                            isNotEnoughCondition = false;
+                        }
+                    }
+                }
+
+                if (e.getType().equals(CouponsConditionEnum.CUSTOMERS_LOYAL.name())) {
+                    Long customerConsumeAmount = orderRepository.getCustomerAmount(id, StatusOrder.DONE.getValue());
+                    log.info("Customer {} consume amount: {}", user.getEmail(), customerConsumeAmount);
+                    if (customerConsumeAmount >= e.getValue()) {
+                        isNotEnoughCondition = false;
+                    }
+                }
+            }
+            return isUsed || isOutOfStock || isNotEnoughCondition;
+        });
+
+        return coupons;
     }
 
     @Override

@@ -257,7 +257,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Object detail(GetOrderDetailRequest request) {
         Orders order = ordersRepository.findById(request.getOrderId()).orElseThrow(() -> new DiamondShopException(400, "Order not found"));
-//        Orders order = ordersRepository.findByUniqueOrderId(request.getUniqueOrderId()).orElseThrow(() -> new DiamondShopException(400, "Order not found"));
 
         List<OrdersListAllUser> ordersListAllUsers = new ArrayList<>();
         OrdersListAllUser ordersListAllUser = new OrdersListAllUser();
@@ -359,24 +358,24 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public DashboardResponse dashboard() {
+    public DashboardResponse dashboard(Date fromDate, Date toDate) {
         DashboardResponse dashboardResponse = new DashboardResponse();
 
         DashboardResponse.OrdersData ordersData = new DashboardResponse.OrdersData();
-        ordersData.setTotalOrder(ordersRepository.findAll().size());
-        ordersData.setOrderInit(ordersRepository.findAllOrderByStatusOrderByCreatedAtDesc(StatusOrder.INIT.getValue()).size());
-        ordersData.setOrderWaitPayment(ordersRepository.findAllOrderByStatusOrderByCreatedAtDesc(StatusOrder.CREATE_PAYMENT.getValue()).size());
-        ordersData.setOrderDelivery(ordersRepository.findAllOrderByStatusOrderByCreatedAtDesc(StatusOrder.DELIVERY.getValue()).size());
-        ordersData.setOrderSuccess(ordersRepository.findAllOrderByStatusOrderByCreatedAtDesc(StatusOrder.DONE.getValue()).size());
-        ordersData.setOrderCancel(ordersRepository.findAllOrderByStatusOrderByCreatedAtDesc(StatusOrder.CANCEL.getValue()).size());
+        ordersData.setTotalOrder(ordersRepository.findAllOrderByDate(fromDate, toDate));
+        ordersData.setOrderInit(ordersRepository.findAllOrderByStatusAndDate(StatusOrder.INIT.getValue(), fromDate, toDate));
+        ordersData.setOrderWaitPayment(ordersRepository.findAllOrderByStatusAndDate(StatusOrder.CREATE_PAYMENT.getValue(), fromDate, toDate));
+        ordersData.setOrderDelivery(ordersRepository.findAllOrderByStatusAndDate(StatusOrder.DELIVERY.getValue(), fromDate, toDate));
+        ordersData.setOrderSuccess(ordersRepository.findAllOrderByStatusAndDate(StatusOrder.DONE.getValue(), fromDate, toDate));
+        ordersData.setOrderCancel(ordersRepository.findAllOrderByStatusAndDate(StatusOrder.CANCEL.getValue(), fromDate, toDate));
 
         DashboardResponse.RevenueData revenueData = new DashboardResponse.RevenueData();
-        revenueData.setPriceInit(ordersRepository.getTotalStatusAmount(StatusOrder.INIT.getValue()));
-        revenueData.setPriceWaitPayment(ordersRepository.getTotalStatusAmount(StatusOrder.CREATE_PAYMENT.getValue()));
-        revenueData.setPriceDelivery(ordersRepository.getTotalStatusAmount(StatusOrder.DELIVERY.getValue()));
-        revenueData.setPriceSuccess(ordersRepository.getTotalStatusAmount(StatusOrder.DONE.getValue()));
-        revenueData.setPriceCancel(ordersRepository.getTotalStatusAmount(StatusOrder.CANCEL.getValue()));
-        revenueData.setTotalPrice(ordersRepository.getTotalStatusAmount(null));
+        revenueData.setPriceInit(ordersRepository.getTotalStatusAmountAndDate(StatusOrder.INIT.getValue(),fromDate, toDate));
+        revenueData.setPriceWaitPayment(ordersRepository.getTotalStatusAmountAndDate(StatusOrder.CREATE_PAYMENT.getValue(),fromDate, toDate));
+        revenueData.setPriceDelivery(ordersRepository.getTotalStatusAmountAndDate(StatusOrder.DELIVERY.getValue(),fromDate, toDate));
+        revenueData.setPriceSuccess(ordersRepository.getTotalStatusAmountAndDate(StatusOrder.DONE.getValue(),fromDate, toDate));
+        revenueData.setPriceCancel(ordersRepository.getTotalStatusAmountAndDate(StatusOrder.CANCEL.getValue(),fromDate, toDate));
+        revenueData.setTotalPrice(ordersRepository.getTotalStatusAmountAndDate(null, null, null));
 
         dashboardResponse.setRevenueData(revenueData);
         dashboardResponse.setOrderInfo(ordersData);
