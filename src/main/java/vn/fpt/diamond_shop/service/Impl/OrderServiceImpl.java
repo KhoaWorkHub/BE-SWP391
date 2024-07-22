@@ -21,6 +21,7 @@ import vn.fpt.diamond_shop.security.AccountService;
 import vn.fpt.diamond_shop.security.UserPrincipal;
 import vn.fpt.diamond_shop.security.model.User;
 import vn.fpt.diamond_shop.service.OrderService;
+import vn.fpt.diamond_shop.third_party.api.CreatePaymentRefundApi;
 import vn.fpt.diamond_shop.util.DateTimeUtils;
 import vn.fpt.diamond_shop.util.UUIDUtil;
 
@@ -65,6 +66,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private DiamondRepository diamondRepository;
+
+    @Autowired
+    private CreatePaymentRefundApi createPaymentRefundApi;
 
     @Override
     public ResponseEntity<Object> orderList(GetListOrderRequest request) {
@@ -327,6 +331,7 @@ public class OrderServiceImpl implements OrderService {
                     request.setStatusDelivery(StatusDelivery.SUCCESS_DELIVERY.getValue());
                 }else if(StatusOrder.CANCEL.equals(request.getStatusOrder())){
                     request.setStatusDelivery(StatusDelivery.FAIL_DELIVERY.getValue());
+                    createPaymentRefundApi.refund(request.getOrderId());
                 }
             }
 
