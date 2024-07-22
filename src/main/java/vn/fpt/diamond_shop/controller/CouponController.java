@@ -64,4 +64,10 @@ public class CouponController extends BaseController {
         couponService.deactivateCoupon(couponCode);
         return ok("Deactivated coupon successfully");
     }
+
+    @GetMapping("/usable")
+    @LogActivities
+    public ResponseEntity<?> getUsableCoupons(@CurrentUser UserPrincipal userPrincipal) {
+        return ok(couponService.getUsableCoupons(userPrincipal.getId()));
+    }
 }
