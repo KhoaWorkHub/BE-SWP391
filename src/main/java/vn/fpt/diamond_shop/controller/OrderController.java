@@ -3,6 +3,7 @@ package vn.fpt.diamond_shop.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import vn.fpt.diamond_shop.constants.UrlConstants;
 import vn.fpt.diamond_shop.request.*;
@@ -12,6 +13,8 @@ import vn.fpt.diamond_shop.service.OrderService;
 import vn.fpt.diamond_shop.util.logger.LogActivities;
 
 import javax.validation.Valid;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Slf4j
 @RestController
@@ -64,9 +67,13 @@ public class OrderController extends BaseController {
 
     @GetMapping("dashboard")
     @LogActivities
-    public ResponseEntity<Object> getDashboard() {
+    public ResponseEntity<Object> getDashboard(@RequestParam(name = "fromDate", required = false) String fromDate,
+                                               @RequestParam(name = "toDate", required = false) String toDate) throws Exception {
+        Date from = StringUtils.isEmpty(fromDate) ? null : new SimpleDateFormat("yyyy-MM-dd").parse(fromDate);
+        Date to = StringUtils.isEmpty(toDate) ? null : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(toDate + " 23:59:59");
+
 //        request.setCustomerId(userPrincipal == null ? null : userPrincipal.getId());
-        return ok(orderService.dashboard());
+        return ok(orderService.dashboard(from, to));
     }
 
     @PostMapping("sendMail")
