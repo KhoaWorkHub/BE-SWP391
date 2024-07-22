@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import vn.fpt.diamond_shop.model.Orders;
 import vn.fpt.diamond_shop.response.OrdersListAllUser;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,10 +29,11 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
     @Query("SELECT SUM(o.totalPrice) FROM Orders o WHERE o.customerId = :customerId AND o.status = :status")
     Long getCustomerAmount(Long customerId, String status);
 
-    List<Orders> findAllOrderByStatusOrderByCreatedAtDesc(String status);
+    @Query("SELECT count(o.orderDate) FROM Orders o WHERE 1=1  AND (:status is null or o.status = :status) AND (:fromDate is null or o.createdAt >= :fromDate) AND (:toDate is null or o.createdAt <= :toDate)")
+    Integer findAllOrderByStatusAndDate(String status, Date fromDate, Date toDate);
 
-    @Query("SELECT SUM(o.totalPrice) FROM Orders o WHERE  1= 1 AND (:status is null or o.status = :status)")
-    Long getTotalStatusAmount(String status);
+    @Query("SELECT SUM(o.totalPrice) FROM Orders o WHERE  1= 1 AND (:status is null or o.status = :status) AND (:fromDate is null or o.createdAt >= :fromDate) AND (:toDate is null or o.createdAt <= :toDate)")
+    Long getTotalStatusAmountAndDate(String status, Date fromDate, Date toDate);
 
     Optional<Orders> findByUniqueOrderId(String uniqueOrderId);
 
@@ -76,4 +78,6 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
             @Param("phoneNumber") String phoneNumber,
             Pageable pageable
     );
+    @Query("SELECT count(o.orderDate) FROM Orders o WHERE 1=1 AND (:fromDate is null or o.createdAt >= :fromDate) AND (:toDate is null or o.createdAt <= :toDate)")
+    Integer findAllOrderByDate(Date fromDate, Date toDate);
 }
