@@ -51,15 +51,15 @@ public class DeliveryServiceImpl implements DeliveryService {
         List<DeliverListResponse> deliverListResponses = new ArrayList<>();
         allByOrderByIdDesc.stream().forEach(
                 allByOrderByIdDescDeliver -> {
-                    DeliverListResponse deliverListResponse = new DeliverListResponse();
-                    deliverListResponse.setId(allByOrderByIdDescDeliver.getId());
-                    deliverListResponse.setUserId(allByOrderByIdDescDeliver.getUserId());
-                    deliverListResponse.setTotalOrder(allByOrderByIdDescDeliver.getTotalOrder());
-                    deliverListResponse.setTotalOrderFail(allByOrderByIdDescDeliver.getTotalOrderFail());
-                    deliverListResponse.setTotalOrderSuccess(allByOrderByIdDescDeliver.getTotalOrderSuccess());
-                    deliverListResponse.setStatus(allByOrderByIdDescDeliver.getStatus());
-                    deliverListResponse.setUserName(endUserRepository.findEndUserByAccountId(allByOrderByIdDescDeliver.getUserId()).get().getFullName());
-                    deliverListResponses.add(deliverListResponse);
+                        DeliverListResponse deliverListResponse = new DeliverListResponse();
+                        deliverListResponse.setId(allByOrderByIdDescDeliver.getId());
+                        deliverListResponse.setUserId(allByOrderByIdDescDeliver.getUserId());
+                        deliverListResponse.setTotalOrder(allByOrderByIdDescDeliver.getTotalOrder());
+                        deliverListResponse.setTotalOrderFail(allByOrderByIdDescDeliver.getTotalOrderFail());
+                        deliverListResponse.setTotalOrderSuccess(allByOrderByIdDescDeliver.getTotalOrderSuccess());
+                        deliverListResponse.setStatus(allByOrderByIdDescDeliver.getStatus());
+                        deliverListResponse.setUserName(endUserRepository.findEndUserByAccountId(allByOrderByIdDescDeliver.getUserId()).get().getFullName());
+                        deliverListResponses.add(deliverListResponse);
                 }
         );
 

@@ -331,7 +331,7 @@ public class OrderServiceImpl implements OrderService {
                     request.setStatusDelivery(StatusDelivery.SUCCESS_DELIVERY.getValue());
                 }else if(StatusOrder.CANCEL.equals(request.getStatusOrder())){
                     request.setStatusDelivery(StatusDelivery.FAIL_DELIVERY.getValue());
-                    createPaymentRefundApi.refund(request.getOrderId());
+                    // createPaymentRefundApi.refund(request.getOrderId());
                 }
             }
 
@@ -342,7 +342,7 @@ public class OrderServiceImpl implements OrderService {
                 delivery.setUpdatedAt(new Date());
                 deliveryRepository.save(delivery);
                 //update deliver
-                Deliver deliverRepositoryByUserId = deliverRepository.findById(delivery.getDeliverId()).get();
+                Deliver deliverRepositoryByUserId = deliverRepository.findByUserId(delivery.getDeliverId());
                 deliverRepositoryByUserId.setTotalOrder(deliverRepositoryByUserId.getTotalOrder() + 1);
                 if (StatusDelivery.SUCCESS_DELIVERY.getValue().equals(request.getStatusDelivery())) {
                     deliverRepositoryByUserId.setTotalOrderSuccess(deliverRepositoryByUserId.getTotalOrderSuccess() + 1);
