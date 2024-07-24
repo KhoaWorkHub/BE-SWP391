@@ -198,6 +198,37 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
+    public void modifyCoupon(ModifyCouponRequest request) {
+        Optional<Coupon> var1 = couponRepository.findById(request.getId());
+        if (!var1.isPresent()) {
+            throw new DiamondShopException("Coupon not found");
+        }
+        Date expirationDate = DateTimeUtils.parse(request.getExpirationDate(), "yyyy-MM-dd");
+        Date now = new Date();
+
+        if (expirationDate.before(now)) {
+            throw new DiamondShopException("Expiration date must be greater than current date");
+        }
+        if (request.getDiscountPercent() < 0 || request.getDiscountPercent() > 100) {
+            throw new DiamondShopException("Discount percent must be between 0 and 100");
+        }
+        if (request.getQuantity() <= 0) {
+            throw new DiamondShopException("Quantity must be greater than 0");
+        }
+        Coupon coupon = var1.get();
+        coupon.setCouponsCode(request.getCode().toUpperCase());
+        coupon.setDiscountPercent(request.getDiscountPercent());
+        coupon.setExpirationDate(DateTimeUtils.parse(request.getExpirationDate(), "yyyy-MM-dd"));
+        coupon.setDiscountType(request.getDiscountType());
+        coupon.setType(request.getType());
+        coupon.setValue(request.getValue());
+        coupon.setQuantity(request.getQuantity());
+        coupon.setUpdatedDate(new Date());
+
+        couponRepository.save(coupon);
+    }
+
+    @Override
     public void usingCoupon(UsingCouponRequest request) {
         if (testMode) {
             return;
