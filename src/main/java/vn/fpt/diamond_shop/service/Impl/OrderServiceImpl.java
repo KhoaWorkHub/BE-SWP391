@@ -477,15 +477,7 @@ public class OrderServiceImpl implements OrderService {
         return giaInfoResponseList;
     }
 
-    private DashboardResponse.SaleData processSaleData(Long saleId){
-    DashboardResponse.SaleData saleData = new DashboardResponse.SaleData();
-    saleData.setTotalPrice(orderDetailRepository.getSaleInfo(saleId, null));
-    saleData.setTotalOrder(orderDetailRepository.getOrderIdBySaleId(saleId, null).size());
-    saleData.setSaleId(saleId);
-    saleData.setTotalOrderSuccess(orderDetailRepository.getOrderIdBySaleId(saleId, StatusOrder.DONE.getValue()).size());
-    saleData.setTotalPriceSuccess(orderDetailRepository.getSaleInfo(saleId, StatusOrder.DONE.getValue()));
-    return saleData;
-}
+
     private void addInvoice(SendInvoiceRequest request) {
         Map<String, Object> attribute = new HashMap<>();
         attribute.put("orderId", request.getOrderId());
