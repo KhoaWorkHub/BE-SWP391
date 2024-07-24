@@ -105,5 +105,24 @@ public class DiamondServiceImpl implements DiamondService {
         return listAllDiamondResponse;
     }
 
-    
+    @Override
+    public Boolean updateDiamond(AddDiamondRequest addDiamondRequest) {
+        Diamond diamond = diamondRepo.findById(addDiamondRequest.getIdDiamond()).get();
+        if(!ObjectUtils.isEmpty(diamond)){
+            diamond.setCarat(addDiamondRequest.getCarat());
+            diamond.setClarityId(addDiamondRequest.getClarity());
+            diamond.setPolishId(addDiamondRequest.getPolish());
+            diamond.setPriceDiamond(addDiamondRequest.getPriceDiamond());
+            diamond.setColorId(addDiamondRequest.getColor());
+            diamond.setOriginId(addDiamondRequest.getOrigin());
+            diamond.setShapeId(addDiamondRequest.getShape());
+            diamond.setCutId(addDiamondRequest.getCut());
+            diamond.setCreateAt(new Date());
+            Diamond saveDiamon = diamondRepo.save(diamond);
+            saveDiamon.setProfit(diamondRepo.getPrice(saveDiamon.getId()));
+            saveDiamon.setPrice(saveDiamon.getProfit() + addDiamondRequest.getPriceDiamond());
+            diamondRepo.save(diamond);
+        }
+        return true;
+    }
 }
