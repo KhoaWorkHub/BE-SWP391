@@ -153,7 +153,8 @@ public class OrderServiceImpl implements OrderService {
                 priceItems += orderDetail.getTotalPrice();
                 orderDetailRepository.save(orderDetail);
                 listJewelris.add(cart.getJewelryId());
-
+                cartRepository.deleteById(cart.getId());
+                orders.setCustomerId(orderDetail.getCustomerId());
             }
 
             orders.setUniqueOrderId(uniqueOrderId);
