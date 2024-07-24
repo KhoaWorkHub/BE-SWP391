@@ -228,7 +228,27 @@ public class CouponServiceImpl implements CouponService {
         couponRepository.save(coupon);
     }
 
+    @Override
+    public void usingCoupon(UsingCouponRequest request) {
+        if (testMode) {
+            return;
+        }
+        Coupon coupon = couponRepository.findByCouponsCode(request.getCouponCode().toUpperCase())
+                .orElseThrow(() -> new RuntimeException("Coupon not found"));
 
+        this.checkCoupon(request.getUserId(), request.getCouponCode());
+
+        coupon.setQuantity(coupon.getQuantity() - 1);
+        couponRepository.save(coupon);
+
+        CouponsHistory couponsHistory = new CouponsHistory();
+        couponsHistory.setCouponsCode(request.getCouponCode());
+        couponsHistory.setCustomerId(request.getUserId());
+        couponsHistory.setOrderId(request.getOrderId());
+        couponsHistory.setCreatedAt(new Date());
+        couponsHistoryRepository.save(couponsHistory);
+
+    }
 
 
     @Override
