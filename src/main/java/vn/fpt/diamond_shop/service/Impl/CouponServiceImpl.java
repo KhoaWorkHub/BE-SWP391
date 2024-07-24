@@ -238,7 +238,6 @@ public class CouponServiceImpl implements CouponService {
 
         this.checkCoupon(request.getUserId(), request.getCouponCode());
 
-        coupon.setQuantity(coupon.getQuantity() - 1);
         couponRepository.save(coupon);
 
         CouponsHistory couponsHistory = new CouponsHistory();
