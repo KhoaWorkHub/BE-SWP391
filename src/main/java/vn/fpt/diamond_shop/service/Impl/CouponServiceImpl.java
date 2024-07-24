@@ -212,7 +212,10 @@ public class CouponServiceImpl implements CouponService {
         if (request.getDiscountPercent() < 0 || request.getDiscountPercent() > 100) {
             throw new DiamondShopException("Discount percent must be between 0 and 100");
         }
-        
+        if (request.getQuantity() <= 0) {
+            throw new DiamondShopException("Quantity must be greater than 0");
+        }
+        Coupon coupon = var1.get();
         coupon.setCouponsCode(request.getCode().toUpperCase());
         coupon.setDiscountPercent(request.getDiscountPercent());
         coupon.setExpirationDate(DateTimeUtils.parse(request.getExpirationDate(), "yyyy-MM-dd"));
