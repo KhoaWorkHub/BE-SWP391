@@ -90,7 +90,14 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public Boolean addDelivery(AddDeliveryRequest request) {
-    
+        Delivery allByOrderId = deliveryRepository.findAllByOrderId(request.getOrderId());
+        Delivery delivery = new Delivery();
+        List<Deliver> allDeleverByStatus = deliverRepository.findAllByStatus(StatusDelivery.StatusDeliver.ACTIVE.getValue());
+        Random rand = new Random();
+        Date date1 = new Date();
+        Date date2 = (Date) date1.clone();
+        date2.setDate(date1.getDate() + 3);
+        if(allByOrderId == null){
             //add
             delivery.setDeliveryFee(request.getDeliveryId());
             delivery.setStatus(StatusDelivery.WAITING.getValue());
