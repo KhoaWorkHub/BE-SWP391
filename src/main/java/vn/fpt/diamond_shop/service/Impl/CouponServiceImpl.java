@@ -94,18 +94,7 @@ public class CouponServiceImpl implements CouponService {
                 Date now = new Date();
                 Date accountAge = user.getCreatedAt();
 
-                if (accountAge == null)
-                    return coupon;
-                LocalDate var2 = Instant.ofEpochMilli(accountAge.getTime())
-                        .atZone(ZoneId.systemDefault())
-                        .toLocalDate();
-
-                LocalDate var3 = Instant.ofEpochMilli(now.getTime())
-                        .atZone(ZoneId.systemDefault())
-                        .toLocalDate();
-
-                Period period = Period.between(var2, var3);
-                int dayBetween = period.getDays();
+               
 
                 if (dayBetween < coupon.getValue()) {
                     throw new DiamondShopException("Customer not enough condition: Account age not enough");
