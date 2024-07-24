@@ -48,7 +48,7 @@ public class SendCouponMailJob {
 
     private String mailSubject = "DIAMOND COUPON";
 
-//    @Scheduled(cron = "0 28 21 * * ?")
+    @Scheduled(cron = "0 20 10 * * ?")
     public void checkAndSendCoupon() {
         log.info("Start send coupon mail task");
         Date now = new Date();

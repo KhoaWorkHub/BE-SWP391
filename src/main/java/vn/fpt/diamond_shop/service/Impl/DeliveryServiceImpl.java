@@ -44,27 +44,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         return ResponseEntity.ok(allByOrderByIdDesc);
     }
 
-    @Override
-    public ResponseEntity<Object> getListDeliver() {
-        List<Deliver> allByOrderByIdDesc = deliverRepository.findAllByOrderByIdDesc();
-
-        List<DeliverListResponse> deliverListResponses = new ArrayList<>();
-        allByOrderByIdDesc.stream().forEach(
-                allByOrderByIdDescDeliver -> {
-                        DeliverListResponse deliverListResponse = new DeliverListResponse();
-                        deliverListResponse.setId(allByOrderByIdDescDeliver.getId());
-                        deliverListResponse.setUserId(allByOrderByIdDescDeliver.getUserId());
-                        deliverListResponse.setTotalOrder(allByOrderByIdDescDeliver.getTotalOrder());
-                        deliverListResponse.setTotalOrderFail(allByOrderByIdDescDeliver.getTotalOrderFail());
-                        deliverListResponse.setTotalOrderSuccess(allByOrderByIdDescDeliver.getTotalOrderSuccess());
-                        deliverListResponse.setStatus(allByOrderByIdDescDeliver.getStatus());
-                        deliverListResponse.setUserName(endUserRepository.findEndUserByAccountId(allByOrderByIdDescDeliver.getUserId()).get().getFullName());
-                        deliverListResponses.add(deliverListResponse);
-                }
-        );
-
-        return ResponseEntity.ok(deliverListResponses);
-    }
+    
 
     @Override
     public Boolean updateDeliver(UpdateDeliverRequest request) {

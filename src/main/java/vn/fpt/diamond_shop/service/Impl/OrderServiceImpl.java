@@ -380,7 +380,9 @@ public class OrderServiceImpl implements OrderService {
         revenueData.setPriceDelivery(ordersRepository.getTotalStatusAmountAndDate(StatusOrder.DELIVERY.getValue(),fromDate, toDate));
         revenueData.setPriceSuccess(ordersRepository.getTotalStatusAmountAndDate(StatusOrder.DONE.getValue(),fromDate, toDate));
         revenueData.setPriceCancel(ordersRepository.getTotalStatusAmountAndDate(StatusOrder.CANCEL.getValue(),fromDate, toDate));
-        revenueData.setTotalPrice(ordersRepository.getTotalStatusAmountAndDate(null, null, null));
+        //revenueData.setTotalPrice(ordersRepository.getTotalStatusAmountAndDate(null, null, null));
+        Long totalPrice = revenueData.getPriceDelivery() + revenueData.getPriceSuccess();
+        revenueData.setTotalPrice(totalPrice);
 
         dashboardResponse.setRevenueData(revenueData);
         dashboardResponse.setOrderInfo(ordersData);
