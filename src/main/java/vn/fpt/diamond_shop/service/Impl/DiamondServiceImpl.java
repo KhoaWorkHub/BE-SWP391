@@ -48,6 +48,9 @@ public class DiamondServiceImpl implements DiamondService {
 
     private final int BASE_PRICE_USD = 100;
 
+    public long diamondPricing(Diamond diamond) {
+        return 0;
+    }
 
     @Override
     public Boolean addDiamond(AddDiamondRequest addDiamondRequest) {
@@ -97,9 +100,9 @@ public class DiamondServiceImpl implements DiamondService {
         listAllDiamondResponse.setColors(colorRepo.findAll());
         listAllDiamondResponse.setOrigins(originRepo.findAll());
         listAllDiamondResponse.setShapes(shapeRepo.findAll());
-
-        return listAllDiamondResponse;  listAllDiamondResponse.setCuts(cutRepository.findAll());
+        listAllDiamondResponse.setCuts(cutRepository.findAll());
         listAllDiamondResponse.setPolishes(polishRepo.findAll());
+        return listAllDiamondResponse;
     }
 
     @Override
