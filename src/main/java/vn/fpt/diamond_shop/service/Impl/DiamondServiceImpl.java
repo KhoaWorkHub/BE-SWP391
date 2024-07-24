@@ -100,8 +100,7 @@ public class DiamondServiceImpl implements DiamondService {
         listAllDiamondResponse.setColors(colorRepo.findAll());
         listAllDiamondResponse.setOrigins(originRepo.findAll());
         listAllDiamondResponse.setShapes(shapeRepo.findAll());
-        listAllDiamondResponse.setCuts(cutRepository.findAll());
-        listAllDiamondResponse.setPolishes(polishRepo.findAll());
+      
         return listAllDiamondResponse;
     }
 
