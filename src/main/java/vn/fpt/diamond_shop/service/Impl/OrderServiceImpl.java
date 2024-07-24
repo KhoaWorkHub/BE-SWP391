@@ -492,7 +492,9 @@ public class OrderServiceImpl implements OrderService {
         attribute.put("date", request.getDate());
         attribute.put("mail", request.getMail());
         attribute.put("customerId", request.getCustomerId());
-      
+        attribute.put("total", request.getTotal());
+        attribute.put("address", request.getAddress());
+        attribute.put("products", request.getProducts());
 
         String invoiceHtml = mailService.getHtmlContent(attribute, "invoice_mail_template.ftl");
         invoiceRepository.save(new Invoice(request.getOrderId(), invoiceHtml));
