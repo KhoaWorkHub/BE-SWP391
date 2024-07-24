@@ -46,7 +46,8 @@ public class Diamond {
     @Column(name = "name")
     private String name;
 
-  
+    @Column(name = "price_diamond")
+    private Long priceDiamond;
 
     @Column(name = "profit")
     private Long profit;
