@@ -425,8 +425,7 @@ public class OrderServiceImpl implements OrderService {
         invoiceDetailResponse.setOrderId(request.getOrderId());
         Orders orders = ordersRepository.findByUniqueOrderId(request.getOrderId()).get();
         invoiceDetailResponse.setOrderDate(orders.getCreatedAt());
-        EndUser endUserByAccountId = endUserRepository.findEndUserByAccountId(orders.getCustomerId()).get();
-        invoiceDetailResponse.setPhoneNumber(endUserByAccountId.getPhoneNumber());
+        
         invoiceDetailResponse.setCustomerName(endUserByAccountId.getFullName());
         List<OrderDetail> allByUniqueOrderId = orderDetailRepository.findAllByUniqueOrderId(request.getOrderId());
         List<InvoiceDetailResponse.Product> productList = new ArrayList<>();
