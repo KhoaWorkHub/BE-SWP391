@@ -66,27 +66,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         return ResponseEntity.ok(deliverListResponses);
     }
 
-    @Override
-    public Boolean updateDeliver(UpdateDeliverRequest request) {
-        Deliver deliverByUserId = deliverRepository.findByUserId(request.getDeliverId());
-        if (deliverByUserId != null) {
-            if(!StringUtils.isEmpty(request.getStatus())){
-                deliverByUserId.setStatus(request.getStatus());
-            }
-            if(request.getTotalOrder() != null){
-                deliverByUserId.setTotalOrder(request.getTotalOrder());
-            }
-            if(request.getTotalOrderFail() != null){
-                deliverByUserId.setTotalOrder(request.getTotalOrderFail());
-            }
-            if(request.getTotalOrderSuccess() != null){
-                deliverByUserId.setTotalOrder(request.getTotalOrderSuccess());
-            }
-            deliverRepository.updateDeliverByUserId(deliverByUserId.getUserId(), deliverByUserId.getStatus(), deliverByUserId.getTotalOrder(), deliverByUserId.getTotalOrderSuccess(), deliverByUserId.getTotalOrderFail(), deliverByUserId.getUpdatedAt());
-        }
-        return true;
 
-    }
 
     @Override
     public Boolean addDelivery(AddDeliveryRequest request) {
