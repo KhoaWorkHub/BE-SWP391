@@ -467,9 +467,7 @@ public class OrderServiceImpl implements OrderService {
                 giaInfoResponse.setShapeCut(shapeRepository.findById(diamond.getShapeId()).get().getShape());
                 giaInfoResponse.setCut(cutRepository.findById(diamond.getCutId()).get().getCut());
                 giaInfoResponse.setNameDiamond(diamond.getName());
-                giaInfoResponse.setClarity(clarityRepository.findById(diamond.getClarityId()).get().getClarity());
-                giaInfoResponse.setColor(colorRepository.findById(diamond.getColorId()).get().getColor());
-                giaInfoResponse.setCarat(diamond.getCarat());
+                
                 giaInfoResponseList.add(giaInfoResponse);
             }
         }
