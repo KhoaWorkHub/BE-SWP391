@@ -238,6 +238,7 @@ public class CouponServiceImpl implements CouponService {
 
         this.checkCoupon(request.getUserId(), request.getCouponCode());
 
+        coupon.setQuantity(coupon.getQuantity() - 1);
         couponRepository.save(coupon);
 
         CouponsHistory couponsHistory = new CouponsHistory();
@@ -250,16 +251,7 @@ public class CouponServiceImpl implements CouponService {
     }
 
 
-    @Override
-    public void deactivateCoupon(String couponCode) {
-        Optional<Coupon> var1 = couponRepository.findByCouponsCode(couponCode);
-        if (!var1.isPresent()) {
-            throw new DiamondShopException("Coupon code not exists");
-        }
-        Coupon coupon = var1.get();
-        coupon.setIsActive(false);
-        couponRepository.save(coupon);
-    }
+
 
     @Override
     public void activeCoupon(String couponCode) {
