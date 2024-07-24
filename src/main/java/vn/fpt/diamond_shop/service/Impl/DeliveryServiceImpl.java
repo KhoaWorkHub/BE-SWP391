@@ -66,18 +66,31 @@ public class DeliveryServiceImpl implements DeliveryService {
         return ResponseEntity.ok(deliverListResponses);
     }
 
+    @Override
+    public Boolean updateDeliver(UpdateDeliverRequest request) {
+        Deliver deliverByUserId = deliverRepository.findByUserId(request.getDeliverId());
+        if (deliverByUserId != null) {
+            if(!StringUtils.isEmpty(request.getStatus())){
+                deliverByUserId.setStatus(request.getStatus());
+            }
+            if(request.getTotalOrder() != null){
+                deliverByUserId.setTotalOrder(request.getTotalOrder());
+            }
+            if(request.getTotalOrderFail() != null){
+                deliverByUserId.setTotalOrder(request.getTotalOrderFail());
+            }
+            if(request.getTotalOrderSuccess() != null){
+                deliverByUserId.setTotalOrder(request.getTotalOrderSuccess());
+            }
+            deliverRepository.updateDeliverByUserId(deliverByUserId.getUserId(), deliverByUserId.getStatus(), deliverByUserId.getTotalOrder(), deliverByUserId.getTotalOrderSuccess(), deliverByUserId.getTotalOrderFail(), deliverByUserId.getUpdatedAt());
+        }
+        return true;
 
+    }
 
     @Override
     public Boolean addDelivery(AddDeliveryRequest request) {
-        Delivery allByOrderId = deliveryRepository.findAllByOrderId(request.getOrderId());
-        Delivery delivery = new Delivery();
-        List<Deliver> allDeleverByStatus = deliverRepository.findAllByStatus(StatusDelivery.StatusDeliver.ACTIVE.getValue());
-        Random rand = new Random();
-        Date date1 = new Date();
-        Date date2 = (Date) date1.clone();
-        date2.setDate(date1.getDate() + 3);
-        if(allByOrderId == null){
+    
             //add
             delivery.setDeliveryFee(request.getDeliveryId());
             delivery.setStatus(StatusDelivery.WAITING.getValue());
