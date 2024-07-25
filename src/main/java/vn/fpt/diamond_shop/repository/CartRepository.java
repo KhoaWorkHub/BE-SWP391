@@ -26,7 +26,7 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
             "c.createdAt as created_at,\n" +
             "c.createdBy as created_by,\n" +
             "j.name as jewelry_title,\n" +
-            "j.materialPrices as price_items,\n" +
+            "j.totailPrice as price_items,\n" +
             "i.url as image_url, " +
             "c.size as size"+
             ") FROM \n" +
@@ -65,7 +65,7 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
             "c.createdAt as created_at,\n" +
             "c.createdBy as created_by,\n" +
             "j.name as jewelry_title,\n" +
-            "j.materialPrices as price_items,\n" +
+            "j.totailPrice as price_items,\n" +
             "i.url as image_url, " +
             "c.size as size"+
             ") FROM \n" +
