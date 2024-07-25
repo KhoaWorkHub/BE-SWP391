@@ -20,4 +20,6 @@ public class GetListOrderRequest extends BaseRequest{
     private Integer limit;
     private Integer offset;
     private String sort;
+    private Boolean isDelivery;
+    private Long deliveryId;
 }
