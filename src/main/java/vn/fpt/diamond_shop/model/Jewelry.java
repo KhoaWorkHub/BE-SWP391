@@ -62,4 +62,7 @@ public class Jewelry {
 
     @Column(name = "gold_weight")
     private Float goldWeight;
+
+    @Column(name = "totail_price")
+    private Long totailPrice;
 }
