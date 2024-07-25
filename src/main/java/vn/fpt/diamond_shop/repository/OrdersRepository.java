@@ -67,15 +67,18 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
             "o.createdAt as createdAt," +
             "o.updatedAt as updatedAt," +
             "eu.phoneNumber as phoneNumber  " +
-            ") FROM Orders as o left join EndUser as eu on (o.customerId = eu.accountId)" +
+            ") FROM Orders as o left join EndUser as eu on (o.customerId = eu.accountId) left join Delivery as de on (o.uniqueOrderId = de.orderId)" +
             " WHERE  1= 1 " +
             "AND (:status is null or o.status = :status)" +
             "AND (:phoneNumber is null or eu.phoneNumber = :phoneNumber)" +
-            "AND (:uniqueOrderId is null or o.uniqueOrderId = :uniqueOrderId)")
+            "AND (:uniqueOrderId is null or o.uniqueOrderId = :uniqueOrderId)"+
+            "AND (:deliveryId is null or de.deliverId = :deliveryId)")
     Page<OrdersListAllUser> searchAllOrders(
             @Param("status") String status,
             @Param("uniqueOrderId") String uniqueOrderId,
             @Param("phoneNumber") String phoneNumber,
+            @Param("deliveryId") Long deliveryId,
+
             Pageable pageable
     );
     @Query("SELECT count(o.orderDate) FROM Orders o WHERE 1=1 AND (:fromDate is null or o.createdAt >= :fromDate) AND (:toDate is null or o.createdAt <= :toDate)")
