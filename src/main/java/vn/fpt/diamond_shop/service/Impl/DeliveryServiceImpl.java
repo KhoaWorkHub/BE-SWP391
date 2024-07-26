@@ -40,7 +40,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public ResponseEntity<Object> listDelivery(GetListDeliveryRequest request) {
-        List<Delivery> allByOrderByIdDesc = deliveryRepository.findAllByOrderId(request.getOrderId());
+        List<Delivery> allByOrderByIdDesc = deliveryRepository.findAllByOrderByIdDesc();
         return ResponseEntity.ok(allByOrderByIdDesc);
     }
 
