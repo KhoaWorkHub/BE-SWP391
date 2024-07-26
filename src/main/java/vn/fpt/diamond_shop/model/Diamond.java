@@ -61,8 +61,8 @@ public class Diamond {
 //    private String polishName;
 //    @Transient
 //    private String colorName;
-//    @Transient
-//    private String shapeName;
+    @Transient
+    private String shapeName;
     @Transient
     private String originName;
     public Diamond(int carat, Long clarityId, Long cutId, Long polishId, Long colorId, Long shapeId) {
