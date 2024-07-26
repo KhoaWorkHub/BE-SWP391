@@ -55,8 +55,8 @@ public class Diamond {
     // New fields for names
 //    @Transient
 //    private String clarityName;
-//    @Transient
-//    private String cutName;
+    @Transient
+    private String cutName;
     @Transient
     private String polishName;
     @Transient
