@@ -130,16 +130,16 @@ public class SocialController extends BaseController {
 
         return ok("User okeee");
     }
-//    @GetMapping("update-all-product")
-//    public ResponseEntity<?> updateAllProduct(){
-//        java.util.List<vn.fpt.diamond_shop.model.Jewelry> listProduct = jewelryRepository.findAll();
-//        java.util.List<vn.fpt.diamond_shop.model.Jewelry> listResult = listProduct.stream().map(jewelry -> {
-//            Diamond diamond = diamondRepository.findById(jewelry.getIdDiamond()).get();
-//            jewelry.setTotailPrice(Long.sum(diamond.getPrice() ,jewelry.getMaterialPrices()));
-//            return jewelry;
-//        }).collect(Collectors.toList());
-//        jewelryRepository.saveAll(listResult);
-//        return ok("oke");
-//    }
+    @GetMapping("update-all-product")
+    public ResponseEntity<?> updateAllProduct(){
+        java.util.List<vn.fpt.diamond_shop.model.Jewelry> listProduct = jewelryRepository.findAll();
+        java.util.List<vn.fpt.diamond_shop.model.Jewelry> listResult = listProduct.stream().map(jewelry -> {
+            Diamond diamond = diamondRepository.findById(jewelry.getIdDiamond()).get();
+            jewelry.setTotailPrice(Long.sum(diamond.getPrice() ,jewelry.getMaterialPrices()));
+            return jewelry;
+        }).collect(Collectors.toList());
+        jewelryRepository.saveAll(listResult);
+        return ok("oke");
+    }
 
 }
