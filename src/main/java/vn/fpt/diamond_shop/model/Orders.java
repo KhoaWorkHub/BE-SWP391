@@ -18,8 +18,8 @@ public class Orders {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "unique_order_id")
-    private String uniqueOrderId;
+//    @Column(name = "unique_order_id")
+//    private String uniqueOrderId;
 
     @Column(name = "order_date")
     private Date orderDate;
