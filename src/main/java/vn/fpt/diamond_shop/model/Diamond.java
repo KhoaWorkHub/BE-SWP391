@@ -53,8 +53,8 @@ public class Diamond {
     private Long profit;
 
     // New fields for names
-//    @Transient
-//    private String clarityName;
+    @Transient
+    private String clarityName;
     @Transient
     private String cutName;
     @Transient
