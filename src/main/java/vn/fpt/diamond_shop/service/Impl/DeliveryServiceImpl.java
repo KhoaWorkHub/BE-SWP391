@@ -58,7 +58,7 @@ public class DeliveryServiceImpl implements DeliveryService {
                         deliverListResponse.setTotalOrderFail(allByOrderByIdDescDeliver.getTotalOrderFail());
                         deliverListResponse.setTotalOrderSuccess(allByOrderByIdDescDeliver.getTotalOrderSuccess());
                         deliverListResponse.setStatus(allByOrderByIdDescDeliver.getStatus());
-                        deliverListResponse.setUserName(endUserRepository.findEndUserByAccountId(allByOrderByIdDescDeliver.getUserId()).get().getFullName());
+                        deliverListResponse.setUserName(endUserRepository.findEndUserByAccountId(allByOrderByIdDescDeliver.getUserId()).toString());
                         deliverListResponses.add(deliverListResponse);
                 }
         );
