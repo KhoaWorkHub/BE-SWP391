@@ -30,6 +30,8 @@ public class Clarity {
 
     @Column(name = "added_price")
     private int addedPrice;
+
+
 //    public Clarity(DiamondClarityEnum clarity) {
 //        this.clarity = clarity;
 //        this.createAt = OffsetDateTime.now();
