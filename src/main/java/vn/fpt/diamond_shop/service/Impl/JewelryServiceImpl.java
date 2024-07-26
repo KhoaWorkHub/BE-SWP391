@@ -14,9 +14,7 @@ import vn.fpt.diamond_shop.model.Color;
 import vn.fpt.diamond_shop.model.Diamond;
 import vn.fpt.diamond_shop.model.Jewelry;
 import vn.fpt.diamond_shop.model.JewelryType;
-import vn.fpt.diamond_shop.repository.DiamondRepository;
-import vn.fpt.diamond_shop.repository.JewelryRepository;
-import vn.fpt.diamond_shop.repository.JewelryTypeRepository;
+import vn.fpt.diamond_shop.repository.*;
 import vn.fpt.diamond_shop.request.CreateDiamondRequest;
 import vn.fpt.diamond_shop.request.GetListJewelryRequest;
 import vn.fpt.diamond_shop.response.*;
@@ -43,6 +41,18 @@ public class JewelryServiceImpl implements JewelryService {
     private ImageServiceImpl imageService;
     @Autowired
     private DiamondRepository diamondRepository;
+    @Autowired
+    private ClarityRepository clarityRepository;
+    @Autowired
+    private CutRepository cutRepository;
+    @Autowired
+    private PolishRepository polishRepository;
+    @Autowired
+    private ColorRepository colorRepository;
+    @Autowired
+    private ShapeRepository shapeRepository;
+    @Autowired
+    private OriginRepository originRepository;
 
     @Override
     public ResponseEntity<Object> jewelries(GetListJewelryRequest request) {
@@ -67,8 +77,16 @@ public class JewelryServiceImpl implements JewelryService {
     @Override
     public GetDetailJewelryResponse detailJewelry(Long id) {
         GetDetailJewelryResponse result = jewelryRepository.getDetailJewelry(id);
-        Diamond diamond = diamondRepository.findById(result.getDiamondId()).orElse(new Diamond());
+        Diamond diamond = diamondRepository.findById(result.getDiamondId()).get();
+        result.setPriceDiamond(diamond.getPrice());
+        result.setTotalPrice(Long.sum(result.getPriceDiamond() ,result.getPrice()));
 //        String diamondColor = DiamondColorEnum.valueOf();
+        result.setClarityName(clarityRepository.findById(diamond.getClarityId()).get().getClarity());
+        result.setCutName(cutRepository.findById(diamond.getCutId()).get().getCut());
+        result.setPolishName(String.valueOf(polishRepository.findById(diamond.getPolishId()).get().getPolish()));
+        result.setColorName(colorRepository.findById(diamond.getColorId()).get().getColor());
+        result.setShapeName(shapeRepository.findById(diamond.getShapeId()).get().getShape());
+        result.setOriginName(originRepository.findById(diamond.getOriginId()).get().getOriginName());
         return result;
     }
 
@@ -80,12 +98,11 @@ public class JewelryServiceImpl implements JewelryService {
     @Override
     public boolean createJewelry(CreateDiamondRequest request) {
         ImageInformation imageInformation = imageService.push(request.getMultipartFile());
-        Long defaultDiamondId = 2L;
 
         Jewelry jewelry = new Jewelry();
         BeanUtils.copyProperties(request, jewelry);
         jewelry.setJewelryCode(jewelryCode());
-        jewelry.setIdDiamond(defaultDiamondId);
+        jewelry.setIdDiamond(request.getIdDiamond());
         jewelry.setCreatedBy("Khoa Tran");
         jewelry.setMaterialPrices(request.getMaterialPrices().longValue());
         jewelry.setJewelryTypeId(request.getJewelryTypeId());
@@ -94,6 +111,8 @@ public class JewelryServiceImpl implements JewelryService {
         jewelry.setIsActive(ACTIVE_VALUE);
         java.util.Date date = new java.util.Date();
         jewelry.setCreatedAt(new Date(date.getTime()));
+        Diamond diamond = diamondRepository.findById(request.getIdDiamond()).get();
+        jewelry.setTotailPrice(Long.sum(diamond.getPrice() ,jewelry.getMaterialPrices()));
         jewelryRepository.save(jewelry);
         return true;
     }
@@ -110,6 +129,9 @@ public class JewelryServiceImpl implements JewelryService {
             jewelry.setName(request.getName());
             jewelry.setDescription(request.getDescription());
             jewelry.setQuantity(request.getQuantity());
+            jewelry.setIdDiamond(request.getIdDiamond() == null ? jewelry.getIdDiamond() : request.getIdDiamond());
+            Diamond diamond = diamondRepository.findById(jewelry.getIdDiamond()).get();
+            jewelry.setTotailPrice(Long.sum(diamond.getPrice() ,jewelry.getMaterialPrices()));
             jewelry.setMaterialPrices(request.getMaterialPrices().longValue());
             if (imageInformation != null) {
                 jewelry.setImageId(imageInformation.getImageId());
