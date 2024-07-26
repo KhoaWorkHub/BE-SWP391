@@ -76,9 +76,9 @@ public class DeliveryServiceImpl implements DeliveryService {
             if(request.getTotalOrder() != null){
                 deliverByUserId.setTotalOrder(request.getTotalOrder());
             }
-            if(request.getTotalOrderFail() != null){
-                deliverByUserId.setTotalOrder(request.getTotalOrderFail());
-            }
+//            if(request.getTotalOrderFail() != null){
+//                deliverByUserId.setTotalOrder(request.getTotalOrderFail());
+//            }
             if(request.getTotalOrderSuccess() != null){
                 deliverByUserId.setTotalOrder(request.getTotalOrderSuccess());
             }
