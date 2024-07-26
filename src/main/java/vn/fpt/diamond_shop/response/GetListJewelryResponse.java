@@ -24,9 +24,13 @@ public class GetListJewelryResponse {
 
     private Long price;
 
+    private Long totalPrice;
+
     private Long imageId;
 
     private String url;
 
     private String description;
+
+    private Long idDiamond;
 }
