@@ -53,16 +53,16 @@ public class Diamond {
     private Long profit;
 
     // New fields for names
-    @Transient
-    private String clarityName;
-    @Transient
-    private String cutName;
-    @Transient
-    private String polishName;
-    @Transient
-    private String colorName;
-    @Transient
-    private String shapeName;
+//    @Transient
+//    private String clarityName;
+//    @Transient
+//    private String cutName;
+//    @Transient
+//    private String polishName;
+//    @Transient
+//    private String colorName;
+//    @Transient
+//    private String shapeName;
     @Transient
     private String originName;
     public Diamond(int carat, Long clarityId, Long cutId, Long polishId, Long colorId, Long shapeId) {
