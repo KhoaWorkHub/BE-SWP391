@@ -59,8 +59,8 @@ public class Diamond {
 //    private String cutName;
 //    @Transient
 //    private String polishName;
-//    @Transient
-//    private String colorName;
+    @Transient
+    private String colorName;
     @Transient
     private String shapeName;
     @Transient
