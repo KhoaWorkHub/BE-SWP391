@@ -3,21 +3,19 @@ package vn.fpt.diamond_shop.service.Impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import vn.fpt.diamond_shop.constants.StatusDelivery;
 import vn.fpt.diamond_shop.jobs.SendCouponMailJob;
+import vn.fpt.diamond_shop.model.Deliver;
+import vn.fpt.diamond_shop.model.Delivery;
 import vn.fpt.diamond_shop.model.EndUser;
-import vn.fpt.diamond_shop.repository.EndUserRepository;
-import vn.fpt.diamond_shop.repository.UserRepository;
-import vn.fpt.diamond_shop.repository.UserRoleRepository;
+import vn.fpt.diamond_shop.repository.*;
 import vn.fpt.diamond_shop.request.ManagerModifyAccountRequest;
 import vn.fpt.diamond_shop.response.ManagerListAccountResponse;
 import vn.fpt.diamond_shop.security.UserPrincipal;
 import vn.fpt.diamond_shop.security.model.*;
 import vn.fpt.diamond_shop.service.AdminService;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -30,6 +28,8 @@ public class AdminServiceImpl implements AdminService {
     private EndUserRepository endUserRepository;
     @Autowired
     private SendCouponMailJob sendCouponMailJob;
+    @Autowired
+    private DeliverRepository deliverRepository;
 
     @Override
     public void changeInforAccount(ManagerModifyAccountRequest request) {
@@ -53,6 +53,12 @@ public class AdminServiceImpl implements AdminService {
         }
         if (request.getRoleId() != null) {
             setRole(request.getAccountId(), request.getRoleId());
+            if (Objects.equals(request.getRoleId(), RoleEnum.DELIVERY.getId()) && !userRoleRepository.existsById(request.getAccountId())) {
+                Deliver delivery = new Deliver();
+                delivery.setUserId(request.getAccountId());
+                delivery.setStatus(StatusDelivery.StatusDeliver.ACTIVE.getValue());
+                delivery.setCreatedAt(new Date());
+            }
         }
         userRepository.save(user);
     }
