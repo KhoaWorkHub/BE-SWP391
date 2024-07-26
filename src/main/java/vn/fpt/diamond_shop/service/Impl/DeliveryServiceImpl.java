@@ -96,7 +96,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         Random rand = new Random();
         Date date1 = new Date();
         Date date2 = (Date) date1.clone();
-        date2.setDate(date1.getDate() + 3);
+        date2.setDate(date1.getDate() + 10);
         if(allByOrderId == null){
             //add
             delivery.setDeliveryFee(request.getDeliveryId());
