@@ -6,6 +6,7 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import vn.fpt.diamond_shop.controller.BaseController;
+import vn.fpt.diamond_shop.model.Diamond;
+import vn.fpt.diamond_shop.repository.DiamondRepository;
+import vn.fpt.diamond_shop.repository.JewelryRepository;
 import vn.fpt.diamond_shop.repository.UserRepository;
 import vn.fpt.diamond_shop.request.LoginRequest;
 import vn.fpt.diamond_shop.request.SignUpRequest;
@@ -32,6 +36,7 @@ import vn.fpt.diamond_shop.security.model.User;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/social")
@@ -54,6 +59,11 @@ public class SocialController extends BaseController {
     private AuthenticationManager authenticationManager;
     @Autowired
     private TokenProvider tokenProvider;
+
+    @Autowired
+    private JewelryRepository jewelryRepository;
+    @Autowired
+    private DiamondRepository diamondRepository;
 
     //http://localhost:8080/social/google
     @PostMapping("/google")
@@ -120,4 +130,16 @@ public class SocialController extends BaseController {
 
         return ok("User okeee");
     }
+    @GetMapping("update-all-product")
+    public ResponseEntity<?> updateAllProduct(){
+        java.util.List<vn.fpt.diamond_shop.model.Jewelry> listProduct = jewelryRepository.findAll();
+        java.util.List<vn.fpt.diamond_shop.model.Jewelry> listResult = listProduct.stream().map(jewelry -> {
+            Diamond diamond = diamondRepository.findById(jewelry.getIdDiamond()).get();
+            jewelry.setTotailPrice(Long.sum(diamond.getPrice() ,jewelry.getMaterialPrices()));
+            return jewelry;
+        }).collect(Collectors.toList());
+        jewelryRepository.saveAll(listResult);
+        return ok("oke");
+    }
+
 }
