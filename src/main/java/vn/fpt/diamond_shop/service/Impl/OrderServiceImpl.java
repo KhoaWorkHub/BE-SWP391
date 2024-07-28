@@ -148,7 +148,7 @@ public class OrderServiceImpl implements OrderService {
                     product.setQuantity(String.valueOf(product.getQuantity()));
                     product.setImage(imageRepository.findById(jewelryData.getImageId()).get().getUrl());
                     products.add(product);
-                    orderDetail.setTotalPrice(cart.getQuantity() * jewelryData.getMaterialPrices());
+                    orderDetail.setTotalPrice(cart.getQuantity() * jewelryData.getTotailPrice());
                 }
                 priceItems += orderDetail.getTotalPrice();
                 orderDetailRepository.save(orderDetail);
@@ -285,7 +285,7 @@ public class OrderServiceImpl implements OrderService {
         if (request.getOffset() == null) {
             request.setOffset(0);
         }
-        Page<OrdersListAllUser> ordersListAllUsers2 = ordersRepository.searchAllOrders(request.getStatus(), request.getOrderId(), request.getPhoneNumber(), PageRequest.of(request.getOffset() / request.getLimit(), request.getLimit(),Sort.by(Sort.Direction.DESC, "id")));
+        Page<OrdersListAllUser> ordersListAllUsers2 = ordersRepository.searchAllOrders(request.getStatus(), request.getOrderId(), request.getPhoneNumber(),request.getDeliveryId(), PageRequest.of(request.getOffset() / request.getLimit(), request.getLimit(),Sort.by(Sort.Direction.DESC, "id")));
 //        List<OrdersListAllUser> ordersListAllUsers = ordersRepository.searchAllOrders(request.getStatus(), request.getOrderId(), request.getPhoneNumber());
         for (OrdersListAllUser order : ordersListAllUsers2.getContent()) {
             List<OrderDetail> allByUniqueOrderId = orderDetailRepository.findAllByUniqueOrderId(order.getUniqueOrderId());
@@ -380,9 +380,7 @@ public class OrderServiceImpl implements OrderService {
         revenueData.setPriceDelivery(ordersRepository.getTotalStatusAmountAndDate(StatusOrder.DELIVERY.getValue(),fromDate, toDate));
         revenueData.setPriceSuccess(ordersRepository.getTotalStatusAmountAndDate(StatusOrder.DONE.getValue(),fromDate, toDate));
         revenueData.setPriceCancel(ordersRepository.getTotalStatusAmountAndDate(StatusOrder.CANCEL.getValue(),fromDate, toDate));
-        //revenueData.setTotalPrice(ordersRepository.getTotalStatusAmountAndDate(null, null, null));
-        Long totalPrice = revenueData.getPriceDelivery() + revenueData.getPriceSuccess();
-        revenueData.setTotalPrice(totalPrice);
+        revenueData.setTotalPrice(ordersRepository.getTotalStatusAmountAndDate(null, null, null));
 
         dashboardResponse.setRevenueData(revenueData);
         dashboardResponse.setOrderInfo(ordersData);
@@ -461,7 +459,8 @@ public class OrderServiceImpl implements OrderService {
         List<OrderDetail> allByUniqueOrderId = orderDetailRepository.findAllByUniqueOrderId(request.getOrderId());
         if(allByUniqueOrderId != null){
             for (OrderDetail orderDetail : allByUniqueOrderId) {
-                Diamond diamond = diamondRepository.findAllByName(orderDetail.getSize());
+                Jewelry jewelryById = jewelryRepository.findJewelryById(orderDetail.getJewelryId());
+                Diamond diamond = diamondRepository.findById(jewelryById.getIdDiamond()).get();
                 giaInfoResponse.setDiamond(diamond);
                 giaInfoResponse.setInvoiceId(orderDetail.getId());
                 giaInfoResponse.setShapeCut(shapeRepository.findById(diamond.getShapeId()).get().getShape());
